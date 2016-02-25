@@ -20,6 +20,6 @@ This README documents the steps are necessary to get run our tests.
 
 ### TODO ###
 
-* [DONE] - dev the Non-Local Means and LBP-TOP denoising method
+* dev the Non-Local Means and LBP-TOP denoising method
 * create a script to run experiments
-* implement a parallel version of Non-Local Means
+* [DONE] - implement a parallel version of Non-Local Means

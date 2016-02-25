@@ -7,9 +7,8 @@ from bob.ip.base import * # Bob's implementation of LBP-TOP
 
 class LBPTOP:
     def __init__(self, lbpXY, lbpXT, lbpYT):
-        #self.lbpTop = LBPTop(lbpXY, lbpXT, lbpYT)
-        self.lbpTop = LBPTop(LBP(8), LBP(8), LBP(8))
-
+        self.lbpTop = LBPTop(lbpXY, lbpXT, lbpYT)
+        
         self.histSize = self.lbpTop.xy.max_label + \
                         self.lbpTop.xt.max_label + \
                         self.lbpTop.yt.max_label

@@ -4,7 +4,8 @@ import os
 import cv2
 import numpy as np
 import sys, argparse
-from NLMeans3D import *
+#from NLMeans3D import *
+from ParNLMeans3D import *
 from compareImages import *
 
 #Parser for input arguments
@@ -45,7 +46,7 @@ nFrames = len(noiseFrameList)
 i = 0
 
 #Create a NLMeans3D object
-nlm = NLMeans3D(h,patchSize,windowSize)
+nlm = ParNLMeans3D(h,patchSize,windowSize)
 
 #Read noise frames
 for f in noiseFrameList:

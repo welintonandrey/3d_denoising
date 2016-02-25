@@ -1,0 +1,101 @@
+#!/usr/bin/env python2
+
+import os
+import cv2
+import numpy as np
+import sys, argparse
+from NLMeans3D import *
+from compareImages import *
+
+#Parser for input arguments
+# Required = IN, OUT and ORI (Paths)
+# Optional = H, P and W (NLMeans parameters)
+parser = argparse.ArgumentParser(description='This is a script for NLMeans-3D-LBP.')
+parser.add_argument('-in','--input', help='Input PATH with the input images (With Noise)',required=True)
+parser.add_argument('-out','--output',help='Input PATH to save the output image (Denoised)', required=True)
+parser.add_argument('-ori','--originals',help='Input PATH with the original images (Without Noise)', required=True)
+parser.add_argument('-H','--filterStrength',help='Input the parameter H (Filter Strength)', required=False, default='3')
+parser.add_argument('-p','--patch',help='Input the size of patch (Neighborhood size of centered voxel)', required=False, default='7')
+parser.add_argument('-w','--window',help='Input the size of search window (Window size of centered voxel)', required=False, default='21')
+args = parser.parse_args()
+
+#Convert arguments
+pathNoiseFrames = args.input
+pathDenoised = args.output
+pathOri = args.originals
+h = int(args.filterStrength)
+patchSize = int(args.patch)
+windowSize = int(args.window)
+
+#Check if the Path for denoised images exist
+#if don't, create!
+if not os.path.exists(pathDenoised):
+    os.makedirs(pathDenoised)
+
+#Create list of all .PNG noise images
+noiseFrameList = sorted(os.listdir(pathNoiseFrames))
+noiseFrameList = [f for f in noiseFrameList if '.png' in f]
+
+#Create list of all .PNG original images
+oriFrameList = sorted(os.listdir(pathOri))
+oriFrameList = [f for f in oriFrameList if '.png' in f]
+
+#Auxiliar
+nFrames = len(noiseFrameList)
+i = 0
+
+#Create a NLMeans3D object
+nlm = NLMeans3D(h,patchSize,windowSize)
+
+#Read noise frames
+for f in noiseFrameList:
+    #Read noise image
+    auxPath = pathNoiseFrames + '/' + f
+    gray = cv2.imread(auxPath, cv2.IMREAD_GRAYSCALE)
+    gray = gray.astype(np.float64)#/255.0
+
+    if i == 0:
+        noiseVideo = np.zeros((nFrames, gray.shape[0], gray.shape[1]))
+
+    #add frame to noiseVideo
+    noiseVideo[i] = gray
+
+    i += 1
+
+i = 0
+#Read original frames
+for f in oriFrameList:
+    #Read original image
+    auxPath = pathOri + '/' + f
+    gray = cv2.imread(auxPath, cv2.IMREAD_GRAYSCALE)
+    gray = gray.astype(np.float64)#/255.0
+
+    if i == 0:
+        oriVideo = np.zeros((nFrames, gray.shape[0], gray.shape[1]))
+
+    #add frame to noiseVideo
+    oriVideo[i] = gray
+
+    i += 1
+
+#Run NLMeans3D denoise
+out = nlm.denoise(noiseVideo)
+
+#Show PSNR and SSIM
+aux = patchSize / 2 + windowSize / 2
+print ("Noise-Original - PSNR: %.4f" % psnr(noiseVideo[aux], oriVideo[aux]))
+print ("Noise-Original - SSIM: %.4f" % ssim(noiseVideo[aux], oriVideo[aux]))
+
+print ("Denoise-Original - PSNR: %.4f" % psnr(out[aux], oriVideo[aux]))
+print ("Denoise-Original - SSIM: %.4f" % ssim(out[aux], oriVideo[aux]))
+
+
+#Save denoised images
+for i in range(0, nFrames):
+    #cv2.imshow('frame', out[i])
+    #cv2.waitKey(1000)
+    aux = out[i]# * 255
+    aux = aux.astype(np.uint8)
+
+    denoiseImagePath = pathDenoised + 'denoise-' + str(i) + '.png'
+    cv2.imwrite(denoiseImagePath, aux)

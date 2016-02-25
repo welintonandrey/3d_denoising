@@ -1,6 +1,6 @@
 # README #
 
-This README documents the steps are necessary to get run our tests.
+This README documents the necessary step to run our tests.
 
 ### What is this repository for? ###
 

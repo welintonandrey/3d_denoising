@@ -28,11 +28,11 @@ class NLMeans3D:
 
         w = np.zeros((self.searchWindowSize, self.searchWindowSize, self.searchWindowSize))
 
-        for t in range(delta, nFrames - delta):
+        for t in xrange(delta, nFrames - delta):
             #print '[%5d] - Processing frame %d ... ' % (t, t),
             sys.stdout.flush()
-            for i in range(delta, nRows - delta):
-                for j in range(delta, nCols - delta):
+            for i in xrange(delta, nRows - delta):
+                for j in xrange(delta, nCols - delta):
                     print '(%d,%d,%d)' % (t,i,j)
                     pc = video[t - halfTemplate: t + halfTemplate + 1, \
                                 i - halfTemplate: i + halfTemplate + 1, \
@@ -40,9 +40,9 @@ class NLMeans3D:
                     #mpc = np.mean(pc)
 
                     print 'Processing pixel (%3d, %3d) ... ' % (i, j),
-                    for tt in range(t - halfWindowSize, t + halfWindowSize + 1):
-                        for ii in range(i - halfWindowSize, i + halfWindowSize + 1):
-                            for jj in range(j - halfWindowSize, j + halfWindowSize + 1):
+                    for tt in xrange(t - halfWindowSize, t + halfWindowSize + 1):
+                        for ii in xrange(i - halfWindowSize, i + halfWindowSize + 1):
+                            for jj in xrange(j - halfWindowSize, j + halfWindowSize + 1):
                                 pn = video[tt - halfTemplate: tt + halfTemplate + 1, \
                                             ii - halfTemplate: ii + halfTemplate + 1, \
                                             jj - halfTemplate: jj + halfTemplate + 1]

@@ -1,6 +1,6 @@
 # README #
 
-This README documents the steps are necessary to get run our tests.
+This README documents the necessary steps to run our tests.
 
 ### What is this repository for? ###
 
@@ -16,9 +16,10 @@ This README documents the steps are necessary to get run our tests.
 * SciPy
 * scikit-image
 * bob.ip.base (from [Bob](https://www.idiap.ch/software/bob/docs/releases/last/sphinx/html/index.html) library)
+* [Joblib](https://pythonhosted.org/joblib/parallel.html)
 
 ### TODO ###
 
 * dev the Non-Local Means and LBP-TOP denoising method
 * create a script to run experiments
-* implement a parallel version of Non-Local Means
+* [DONE] - implement a parallel version of Non-Local Means

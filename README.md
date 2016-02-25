@@ -22,5 +22,6 @@ This README documents the necessary steps to run our tests.
 
 * handle boundaries (use copyMakeBorder from OpenCV)
 * dev the Non-Local Means and LBP-TOP denoising method
+* implement a 2D version of Non-Local Means
 * [DONE] - create a script to run experiments
 * [DONE] - implement a parallel version of Non-Local Means

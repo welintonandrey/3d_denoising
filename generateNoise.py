@@ -13,9 +13,8 @@ frameList = sorted(os.listdir(pathOriginalFrames))
 frameList = [f for f in frameList if '.png' in f]
 for f in frameList:
     originalImagePath = pathOriginalFrames + f
-    original = cv2.imread(originalImagePath)
-    gray = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-    gray = gray.astype(np.float64)#/255.0
+    original = cv2.imread(originalImagePath, cv2.IMREAD_GRAYSCALE)
+    gray = original.astype(np.float64)#/255.0
 
     noise = np.random.normal(0, std, gray.shape)
     noiseImage = gray + noise

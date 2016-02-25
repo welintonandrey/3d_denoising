@@ -20,9 +20,8 @@ nlm = NLMeans3D(20,5,9)
 for f in frameList:
     originalImagePath = pathNoiseFrames + '/' + f
     print originalImagePath
-    original = cv2.imread(originalImagePath)
-    gray = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-    gray = gray.astype(np.float64)#/255.0
+    original = cv2.imread(originalImagePath, cv2.IMREAD_GRAYSCALE)
+    gray = original.astype(np.float64)#/255.0
 
     if i == 0:
         video = np.zeros((nFrames, gray.shape[0], gray.shape[1]))

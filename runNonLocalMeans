@@ -29,9 +29,6 @@ h = args.filterStrength
 patchSize = args.patch
 windowSize = args.window
 
-print args.algorithm
-sys.exit('!!!')
-
 #Check if the Path for denoised images exist
 #if don't, create!
 if not os.path.exists(pathDenoised):

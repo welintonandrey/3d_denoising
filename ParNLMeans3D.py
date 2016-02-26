@@ -20,6 +20,7 @@ def hist(lbpVideos, ti, tf, ri, rf, ci, cf, sizeXY, sizeXT, sizeYT):
     return hist
 
 def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT):
+    delta = halfWindowSize + halfTemplate
     ws = 2*halfWindowSize+1
     w = np.zeros((ws, ws, ws))
     wLBP = np.zeros((ws, ws, ws))
@@ -68,12 +69,15 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
     w[halfWindowSize, halfWindowSize, halfWindowSize] = np.max(w)
     w = w / np.sum(w)
 
+    m = w * wLBP
+    m = m / np.sum(m)
+
     neighborhood = video[t - halfWindowSize: t + halfWindowSize + 1, \
                         i - halfWindowSize: i + halfWindowSize + 1, \
                         j - halfWindowSize: j + halfWindowSize + 1]
 
-    print 'Pixel (%3d, %3d) processed!!! ' % (i, j)
-    return np.sum(w*neighborhood), np.sum(w*wLBP*neighborhood)
+    print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
+    return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood)
 
 class ParNLMeans3D:
     def __init__(self, h = 3, templateWindowSize = 7, searchWindowSize = 21, sigma = 1):
@@ -83,17 +87,24 @@ class ParNLMeans3D:
         self.sigma = sigma
 
     # video -> numpy array (3D)
-    def denoise(self, video):
+    def denoise(self, videoIn):
+        halfWindowSize = self.searchWindowSize / 2
+        halfTemplate = self.templateWindowSize / 2
+        delta = halfWindowSize + halfTemplate
+
+        shape = tuple(np.add(videoIn.shape, (0, 2*delta, 2*delta)))
+        video = np.zeros(shape)
+        for i in xrange(0, videoIn.shape[0]):
+            video[i] = cv2.copyMakeBorder(videoIn[i], delta, delta, delta, delta, cv2.BORDER_REFLECT_101)
+
         out = video.copy()
+        outLBP = video.copy()
+        outM = video.copy()
         #out = np.ones(video.shape)
 
         nFrames = video.shape[0]
         nRows = video.shape[1]
         nCols = video.shape[2]
-
-        halfWindowSize = self.searchWindowSize / 2
-        halfTemplate = self.templateWindowSize / 2
-        delta = halfWindowSize + halfTemplate
 
         aux = np.zeros((self.templateWindowSize, self.templateWindowSize, self.templateWindowSize))
         aux[halfTemplate, halfTemplate, halfTemplate] = 1
@@ -113,10 +124,9 @@ class ParNLMeans3D:
         ncpus = joblib.cpu_count()
         results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT) for t,i,j in coordinates)
 
-        print results
-
         for idx in xrange(0,len(results)):
             out[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][0]
             outLBP[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][1]
+            outM[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][2]
 
-        return (out, outLBP)
+        return out[:, delta: -delta, delta: -delta], outLBP[:, delta: -delta, delta: -delta], outM[:, delta: -delta, delta: -delta]

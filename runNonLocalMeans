@@ -15,18 +15,22 @@ parser = argparse.ArgumentParser(description='This is a script for NLMeans-3D-LB
 parser.add_argument('-in','--input', help='Input PATH with the input images (With Noise)',required=True)
 parser.add_argument('-out','--output',help='Input PATH to save the output image (Denoised)', required=True)
 parser.add_argument('-ori','--originals',help='Input PATH with the original images (Without Noise)', required=True)
-parser.add_argument('-H','--filterStrength',help='Input the parameter H (Filter Strength)', required=False, default='3')
-parser.add_argument('-p','--patch',help='Input the size of patch (Neighborhood size of centered voxel)', required=False, default='7')
-parser.add_argument('-w','--window',help='Input the size of search window (Window size of centered voxel)', required=False, default='21')
+parser.add_argument('-H','--filterStrength',help='Input the parameter H (Filter Strength)', type=int, required=False, default=3)
+parser.add_argument('-p','--patch',help='Input the size of patch (Neighborhood size of centered voxel)', type=int,required=False, default=7)
+parser.add_argument('-w','--window',help='Input the size of search window (Window size of centered voxel)', type=int,required=False, default=21)
+parser.add_argument('-alg','--algorithm',help='Choose which algorithm will perform ()', choices=['nlm', 'nlmlbp', 'nlm3d', 'nlm3dlbp'], required=False)
 args = parser.parse_args()
 
 #Convert arguments
 pathNoiseFrames = args.input
 pathDenoised = args.output
 pathOri = args.originals
-h = int(args.filterStrength)
-patchSize = int(args.patch)
-windowSize = int(args.window)
+h = args.filterStrength
+patchSize = args.patch
+windowSize = args.window
+
+print args.algorithm
+sys.exit('!!!')
 
 #Check if the Path for denoised images exist
 #if don't, create!

@@ -81,7 +81,7 @@ for f in oriFrameList:
     i += 1
 
 #Run NLMeans3D denoise
-out = nlm.denoise(noiseVideo)
+out, outLBP = nlm.denoise(noiseVideo)
 
 #Show PSNR and SSIM
 aux = patchSize / 2 + windowSize / 2
@@ -91,6 +91,8 @@ print ("Noise-Original - SSIM: %.4f" % ssim(noiseVideo[aux], oriVideo[aux]))
 print ("Denoise-Original - PSNR: %.4f" % psnr(out[aux], oriVideo[aux]))
 print ("Denoise-Original - SSIM: %.4f" % ssim(out[aux], oriVideo[aux]))
 
+print ("DenoiseLBP-Original - PSNR: %.4f" % psnr(outLBP[aux], oriVideo[aux]))
+print ("DenoiseLBP-Original - SSIM: %.4f" % ssim(outLBP[aux], oriVideo[aux]))
 
 #Save denoised images
 for i in range(0, nFrames):
@@ -98,6 +100,10 @@ for i in range(0, nFrames):
     #cv2.waitKey(1000)
     aux = out[i]# * 255
     aux = aux.astype(np.uint8)
-
     denoiseImagePath = pathDenoised + 'denoise-' + str(i) + '.png'
+    cv2.imwrite(denoiseImagePath, aux)
+
+    aux = outLBP[i]# * 255
+    aux = aux.astype(np.uint8)
+    denoiseImagePath = pathDenoised + 'LBP-denoise-' + str(i) + '.png'
     cv2.imwrite(denoiseImagePath, aux)

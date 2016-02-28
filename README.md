@@ -15,13 +15,14 @@ This README documents the necessary steps to run our tests.
 * NumPy
 * SciPy
 * scikit-image
-* bob.ip.base (from [Bob](https://www.idiap.ch/software/bob/docs/releases/last/sphinx/html/index.html) library)
+* bob.ip.base (from [Bob](https://www.idiap.ch/software/bob/docs/releases/last/sphinx/html/index.html) library). See also this [link](https://github.com/idiap/bob/wiki/Dependencies)
 * [Joblib](https://pythonhosted.org/joblib/parallel.html)
 
 ### TODO ###
 
-* handle boundaries (use copyMakeBorder from OpenCV)
-* [DONE*] - dev the Non-Local Means and LBP-TOP denoising method
+* dev the Non-Local Means and MSB denoising method
+* [DONE] - handle boundaries (use copyMakeBorder from OpenCV)
+* [DONE] - dev the Non-Local Means and LBP-TOP denoising method
 * implement a 2D version of Non-Local Means
 * [DONE] - create a script to run experiments
 * [DONE] - implement a parallel version of Non-Local Means

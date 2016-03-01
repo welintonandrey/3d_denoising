@@ -2,8 +2,8 @@ import os
 import cv2
 import numpy as np
 
-pathOriginalFrames = '/home/tiagosn/Desktop/3D-NL-Means/videos/seq1/' # colocar ser o / no final
-std = 25
+pathOriginalFrames = '/home/tiagosn/git_repos/3D_denoising/seq3/color/'
+std = 0
 
 newPath = pathOriginalFrames + 'gaussian_noise-' + str(std)
 if not os.path.exists(newPath):

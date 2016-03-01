@@ -42,6 +42,11 @@ noiseFrameList = [f for f in noiseFrameList if '.png' in f]
 oriFrameList = sorted(os.listdir(pathOri))
 oriFrameList = [f for f in oriFrameList if '.png' in f]
 
+# filters only ONE frame
+n = patchSize + windowSize + 1
+noiseFrameList = noiseFrameList[0:n]
+oriFrameList = oriFrameList[0:n]
+
 #Auxiliar
 nFrames = len(noiseFrameList)
 i = 0

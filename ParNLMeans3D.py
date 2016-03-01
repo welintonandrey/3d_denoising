@@ -16,7 +16,7 @@ def hist(lbpVideos, ti, tf, ri, rf, ci, cf, sizeXY, sizeXT, sizeYT):
     hist = np.concatenate((np.histogram(lbpVideos['xy'][ti:tf,ri:rf,ci:cf], sizeXY)[0], \
                             np.histogram(lbpVideos['xt'][ti:tf,ri:rf,ci:cf], sizeXT)[0], \
                             np.histogram(lbpVideos['yt'][ti:tf,ri:rf,ci:cf], sizeYT)[0])) + d
-
+    hist = hist / np.sum(hist)
     return hist
 
 def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT):
@@ -34,8 +34,8 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
                     j - halfTemplate, j + halfTemplate + 1, \
                     sizeXY, sizeXT, sizeYT)
 
-    nonUniformPixel = (histc[9] + histc[19] + histc[29]) / 3.0
-    nonUniformPixelXY = histc[9]
+    nonUniformPixel = (histc[9] + histc[19] + histc[29])
+    nonUniformPixelXY = histc[9] * 3
 
     for tt in xrange(t - halfWindowSize, t + halfWindowSize + 1):
         for ii in xrange(i - halfWindowSize, i + halfWindowSize + 1):
@@ -79,8 +79,16 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
                         i - halfWindowSize: i + halfWindowSize + 1, \
                         j - halfWindowSize: j + halfWindowSize + 1]
 
+    aux = 0.0
+
+    if nonUniformPixel >= 0.09:
+        aux = np.sum(w*neighborhood)
+    else:
+        aux = np.sum(m*neighborhood)
+
     print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
-    return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
+    #return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
+    return np.sum(w*neighborhood),  aux, np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
 
 class ParNLMeans3D:
     def __init__(self, h = 3, templateWindowSize = 7, searchWindowSize = 21, sigma = 1):

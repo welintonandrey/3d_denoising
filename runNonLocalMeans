@@ -43,7 +43,7 @@ oriFrameList = sorted(os.listdir(pathOri))
 oriFrameList = [f for f in oriFrameList if '.png' in f]
 
 # filters only ONE frame
-n = patchSize + windowSize + 1
+n = (patchSize / 2) * 2 + (windowSize / 2) * 2 + 1
 noiseFrameList = noiseFrameList[0:n]
 oriFrameList = oriFrameList[0:n]
 
@@ -121,12 +121,12 @@ for i in range(0, nFrames):
     denoiseImagePath = pathDenoised + 'LBP-NLM-denoise-' + str(i) + '.png'
     cv2.imwrite(denoiseImagePath, aux)
 
-    aux = outNonUni[i]# * 255
+    aux = outNonUni[i] * 255
     aux = aux.astype(np.uint8)
     denoiseImagePath = pathDenoised + 'NonUni-' + str(i) + '.png'
     cv2.imwrite(denoiseImagePath, aux)
 
-    aux = outNonUniXY[i]# * 255
+    aux = outNonUniXY[i] * 255
     aux = aux.astype(np.uint8)
     denoiseImagePath = pathDenoised + 'NonUniXY-' + str(i) + '.png'
     cv2.imwrite(denoiseImagePath, aux)

@@ -38,8 +38,8 @@ class LBPTOP:
         lastFrame = np.reshape(newCuboid[-1], (1,newCuboid[-1].shape[0],newCuboid[-1].shape[1]))
         newCuboid = np.concatenate((firstFrame,newCuboid,lastFrame))
 
-        print newCuboid.shape
-        print cuboid.shape
+        #print newCuboid.shape
+        #print cuboid.shape
 
         xy = np.zeros(cuboid.shape, dtype=np.uint16)
         xt = np.zeros(cuboid.shape, dtype=np.uint16)

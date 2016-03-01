@@ -34,6 +34,9 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
                     j - halfTemplate, j + halfTemplate + 1, \
                     sizeXY, sizeXT, sizeYT)
 
+    nonUniformPixel = (histc[9] + histc[19] + histc[29]) / 3.0
+    nonUniformPixelXY = histc[9]
+
     for tt in xrange(t - halfWindowSize, t + halfWindowSize + 1):
         for ii in xrange(i - halfWindowSize, i + halfWindowSize + 1):
             for jj in xrange(j - halfWindowSize, j + halfWindowSize + 1):
@@ -77,7 +80,7 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
                         j - halfWindowSize: j + halfWindowSize + 1]
 
     print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
-    return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood)
+    return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
 
 class ParNLMeans3D:
     def __init__(self, h = 3, templateWindowSize = 7, searchWindowSize = 21, sigma = 1):
@@ -100,6 +103,8 @@ class ParNLMeans3D:
         out = video.copy()
         outLBP = video.copy()
         outM = video.copy()
+        outNonUni = video.copy()
+        outNonUniXY = video.copy()
         #out = np.ones(video.shape)
 
         nFrames = video.shape[0]
@@ -128,5 +133,11 @@ class ParNLMeans3D:
             out[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][0]
             outLBP[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][1]
             outM[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][2]
+            outNonUni[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][3]
+            outNonUniXY[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][4]
 
-        return out[:, delta: -delta, delta: -delta], outLBP[:, delta: -delta, delta: -delta], outM[:, delta: -delta, delta: -delta]
+        return out[:, delta: -delta, delta: -delta], \
+                outLBP[:, delta: -delta, delta: -delta], \
+                outM[:, delta: -delta, delta: -delta],\
+                outNonUni[:, delta: -delta, delta: -delta],\
+                outNonUniXY[:, delta: -delta, delta: -delta]

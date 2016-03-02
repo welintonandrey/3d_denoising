@@ -103,7 +103,7 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
 
     print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
     #return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
-    return np.sum(w*neighborhood),  aux, np.sum(m*neighborhood), np.sum(wMSB*neighborhood)
+    return np.sum(w*neighborhood), aux, np.sum(m*neighborhood), np.sum(wMSB*neighborhood)
 
 class ParNLMeans3D:
     def __init__(self, h = 3, templateWindowSize = 7, searchWindowSize = 21, sigma = 1, nMSB = 4):
@@ -150,7 +150,7 @@ class ParNLMeans3D:
         sizeYT = lbpTop.getMaxYT()
 
         mask = 255 - (2**(8-self.nMSB) - 1)
-        videoMSB = np.uint8(video) & mask
+        videoMSB = np.float64(np.uint8(video) & mask)
 
         ncpus = joblib.cpu_count()
         results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT, videoMSB) for t,i,j in coordinates)

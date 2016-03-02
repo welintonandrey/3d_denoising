@@ -86,7 +86,7 @@ for f in oriFrameList:
     i += 1
 
 #Run NLMeans3D denoise
-out, outLBP, outM, outNonUni, outNonUniXY = nlm.denoise(noiseVideo)
+out, outLBPAdaptive, outLBP, outMSB = nlm.denoise(noiseVideo)
 
 #Show PSNR and SSIM
 aux = patchSize / 2 + windowSize / 2
@@ -96,11 +96,14 @@ print ("Noise-Original - SSIM: %.4f" % ssim(noiseVideo[aux], oriVideo[aux]))
 print ("Denoise-NLM-Original - PSNR: %.4f" % psnr(out[aux], oriVideo[aux]))
 print ("Denoise-NLM-Original - SSIM: %.4f" % ssim(out[aux], oriVideo[aux]))
 
-print ("Denoise-LBP-Original - PSNR: %.4f" % psnr(outLBP[aux], oriVideo[aux]))
-print ("Denoise-LBP-Original - SSIM: %.4f" % ssim(outLBP[aux], oriVideo[aux]))
+print ("Denoise-NLM_and_LBP-Original - PSNR: %.4f" % psnr(outLBP[aux], oriVideo[aux]))
+print ("Denoise-NLM_and_LBP-Original - SSIM: %.4f" % ssim(outLBP[aux], oriVideo[aux]))
 
-print ("Denoise-NLM_and_LBP-Original - PSNR: %.4f" % psnr(outM[aux], oriVideo[aux]))
-print ("Denoise-NLM_and_LBP-Original - SSIM: %.4f" % ssim(outM[aux], oriVideo[aux]))
+print ("Denoise-LBP-Adaptive - PSNR: %.4f" % psnr(outLBPAdaptive[aux], oriVideo[aux]))
+print ("Denoise-LBP-Adaptive - SSIM: %.4f" % ssim(outLBPAdaptive[aux], oriVideo[aux]))
+
+print ("Denoise-NLM_and_MSB - PSNR: %.4f" % psnr(outMSB[aux], oriVideo[aux]))
+print ("Denoise-NLM_and_MSB - SSIM: %.4f" % ssim(outMSB[aux], oriVideo[aux]))
 
 #Save denoised images
 for i in range(0, nFrames):
@@ -116,17 +119,12 @@ for i in range(0, nFrames):
     denoiseImagePath = pathDenoised + 'LBP-denoise-' + str(i) + '.png'
     cv2.imwrite(denoiseImagePath, aux)
 
-    aux = outM[i]# * 255
+    aux = outLBPAdaptive[i]# * 255
     aux = aux.astype(np.uint8)
-    denoiseImagePath = pathDenoised + 'LBP-NLM-denoise-' + str(i) + '.png'
+    denoiseImagePath = pathDenoised + 'LBP-Adaptive-denoise-' + str(i) + '.png'
     cv2.imwrite(denoiseImagePath, aux)
 
-    aux = outNonUni[i] * 255
+    aux = outMSB[i] * 255
     aux = aux.astype(np.uint8)
-    denoiseImagePath = pathDenoised + 'NonUni-' + str(i) + '.png'
-    cv2.imwrite(denoiseImagePath, aux)
-
-    aux = outNonUniXY[i] * 255
-    aux = aux.astype(np.uint8)
-    denoiseImagePath = pathDenoised + 'NonUniXY-' + str(i) + '.png'
+    denoiseImagePath = pathDenoised + 'MSB-denoise-' + str(i) + '.png'
     cv2.imwrite(denoiseImagePath, aux)

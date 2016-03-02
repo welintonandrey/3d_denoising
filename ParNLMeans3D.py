@@ -19,15 +19,19 @@ def hist(lbpVideos, ti, tf, ri, rf, ci, cf, sizeXY, sizeXT, sizeYT):
     hist = hist / np.sum(hist)
     return hist
 
-def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT):
+def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT, videoMSB):
     delta = halfWindowSize + halfTemplate
     ws = 2*halfWindowSize+1
     w = np.zeros((ws, ws, ws))
+    wMSB = np.zeros((ws, ws, ws))
     wLBP = np.zeros((ws, ws, ws))
 
     pc = video[t - halfTemplate: t + halfTemplate + 1, \
                 i - halfTemplate: i + halfTemplate + 1, \
                 j - halfTemplate: j + halfTemplate + 1]
+    pcMSB = videoMSB[t - halfTemplate: t + halfTemplate + 1, \
+                    i - halfTemplate: i + halfTemplate + 1, \
+                    j - halfTemplate: j + halfTemplate + 1]
     histc = hist(lbpVideos, \
                     t - halfTemplate, t + halfTemplate + 1, \
                     i - halfTemplate, i + halfTemplate + 1, \
@@ -35,7 +39,7 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
                     sizeXY, sizeXT, sizeYT)
 
     nonUniformPixel = (histc[9] + histc[19] + histc[29])
-    nonUniformPixelXY = histc[9] * 3
+    #nonUniformPixelXY = histc[9] * 3
 
     for tt in xrange(t - halfWindowSize, t + halfWindowSize + 1):
         for ii in xrange(i - halfWindowSize, i + halfWindowSize + 1):
@@ -43,6 +47,9 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
                 pn = video[tt - halfTemplate: tt + halfTemplate + 1, \
                             ii - halfTemplate: ii + halfTemplate + 1, \
                             jj - halfTemplate: jj + halfTemplate + 1]
+                pnMSB = videoMSB[tt - halfTemplate: tt + halfTemplate + 1, \
+                                ii - halfTemplate: ii + halfTemplate + 1, \
+                                jj - halfTemplate: jj + halfTemplate + 1]
 
                 tw = tt - t + halfWindowSize
                 iw = ii - i + halfWindowSize
@@ -60,6 +67,9 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
                 # chi-square dissimilarity measure
                 wLBP[tw, iw, jw] =  np.sum(((histc - histn)**2) / (histc + histn))
 
+                dist2 = np.sum(((pcMSB-pnMSB)**2)*gaussian)
+                wMSB[tw, iw, jw] = np.exp(-(dist2/(h*h)))
+
     # calc w_LBP
     hs = np.std(wLBP)
     wLBP = np.exp(-wLBP/hs)
@@ -71,6 +81,11 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
     w[halfWindowSize, halfWindowSize, halfWindowSize] = 0.0
     w[halfWindowSize, halfWindowSize, halfWindowSize] = np.max(w)
     w = w / np.sum(w)
+
+    # calc w_Intensity_MSB
+    wMSB[halfWindowSize, halfWindowSize, halfWindowSize] = 0.0
+    wMSB[halfWindowSize, halfWindowSize, halfWindowSize] = np.max(wMSB)
+    wMSB = wMSB / np.sum(wMSB)
 
     m = w * wLBP
     m = m / np.sum(m)
@@ -88,14 +103,15 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
 
     print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
     #return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
-    return np.sum(w*neighborhood),  aux, np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
+    return np.sum(w*neighborhood),  aux, np.sum(m*neighborhood), np.sum(wMSB*neighborhood)
 
 class ParNLMeans3D:
-    def __init__(self, h = 3, templateWindowSize = 7, searchWindowSize = 21, sigma = 1):
+    def __init__(self, h = 3, templateWindowSize = 7, searchWindowSize = 21, sigma = 1, nMSB = 4):
         self.h = h
         self.templateWindowSize = templateWindowSize
         self.searchWindowSize = searchWindowSize
         self.sigma = sigma
+        self.nMSB = nMSB
 
     # video -> numpy array (3D)
     def denoise(self, videoIn):
@@ -134,8 +150,11 @@ class ParNLMeans3D:
         sizeXT = lbpTop.getMaxXT()
         sizeYT = lbpTop.getMaxYT()
 
+        mask = 255 - (2**(8-self.nMSB) - 1)
+        videoMSB = np.uint8(video) & mask
+
         ncpus = joblib.cpu_count()
-        results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT) for t,i,j in coordinates)
+        results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT, videoMSB) for t,i,j in coordinates)
 
         for idx in xrange(0,len(results)):
             out[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][0]

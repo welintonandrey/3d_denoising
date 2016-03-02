@@ -125,10 +125,9 @@ class ParNLMeans3D:
             video[i] = cv2.copyMakeBorder(videoIn[i], delta, delta, delta, delta, cv2.BORDER_REFLECT_101)
 
         out = video.copy()
+        outLBPAdaptive = video.copy()
         outLBP = video.copy()
-        outM = video.copy()
-        outNonUni = video.copy()
-        outNonUniXY = video.copy()
+        outMSB = video.copy()
         #out = np.ones(video.shape)
 
         nFrames = video.shape[0]
@@ -156,15 +155,16 @@ class ParNLMeans3D:
         ncpus = joblib.cpu_count()
         results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT, videoMSB) for t,i,j in coordinates)
 
+        return np.sum(w*neighborhood),  aux, np.sum(m*neighborhood), np.sum(wMSB*neighborhood)
+        out, outLBPAdaptive, outLBP, outMSB
+
         for idx in xrange(0,len(results)):
             out[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][0]
-            outLBP[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][1]
-            outM[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][2]
-            outNonUni[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][3]
-            outNonUniXY[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][4]
+            outLBPAdaptive[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][1]
+            outLBP[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][2]
+            outMSB[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][3]
 
         return out[:, delta: -delta, delta: -delta], \
-                outLBP[:, delta: -delta, delta: -delta], \
-                outM[:, delta: -delta, delta: -delta],\
-                outNonUni[:, delta: -delta, delta: -delta],\
-                outNonUniXY[:, delta: -delta, delta: -delta]
+                outLBPAdaptive[:, delta: -delta, delta: -delta], \
+                outLBP[:, delta: -delta, delta: -delta],\
+                outMSB[:, delta: -delta, delta: -delta]

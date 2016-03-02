@@ -155,9 +155,6 @@ class ParNLMeans3D:
         ncpus = joblib.cpu_count()
         results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, sizeXY, sizeXT, sizeYT, videoMSB) for t,i,j in coordinates)
 
-        return np.sum(w*neighborhood),  aux, np.sum(m*neighborhood), np.sum(wMSB*neighborhood)
-        out, outLBPAdaptive, outLBP, outMSB
-
         for idx in xrange(0,len(results)):
             out[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][0]
             outLBPAdaptive[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][1]

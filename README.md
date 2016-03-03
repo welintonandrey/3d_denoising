@@ -24,8 +24,8 @@ This README documents the necessary steps to run our tests.
 * [DONE] - dev the Non-Local Means and LBP-TOP denoising method
 * [DONE] - create a script to run experiments
 * [DONE] - implement a parallel version of Non-Local Means
-* dev the Non-Local Means and MSB denoising method
-* implement a 2D version of Non-Local Means
+* [DONE] - dev the Non-Local Means and MSB denoising method
+* [DONE] - implement a 2D version of Non-Local Means
 * implement a 3D version of Non-Local Means, which only considers 2D regions
 * create a new test (a scene which lots of objects)
 * implement a fast version of all NLM variants =)

@@ -86,68 +86,62 @@ for f in oriFrameList:
 
     i += 1
 
-#Get position of denoised image
+#Get index denoised image
 aux = patchSize / 2 + windowSize / 2
 
-#Run NLMeans2D
-print "Processing NLM2D \n"
+#Run NLMeans2D denoised
 nlm2d = ParNLMeans2D(h,patchSize,windowSize)
-out2d = nlm2d.denoise(noiseVideo[aux])
+outNLM2D = nlm2d.denoise(noiseVideo[aux])
 
 #Run NLMeans3D denoise
-print "Processing NLM3D \n"
 out, outLBPAdaptive, outLBP, outMSB, outMSBLBP = nlm.denoise(noiseVideo)
 
 #Show PSNR and SSIM
 print ("Noise-Original - PSNR: %.4f" % psnr(noiseVideo[aux], oriVideo[aux]))
-print ("Noise-Original - SSIM: %.4f \n" % ssim(noiseVideo[aux], oriVideo[aux]))
+print ("Noise-Original - SSIM: %.4f" % ssim(noiseVideo[aux], oriVideo[aux]))
 
-print ("Denoise-NLM-Original - PSNR: %.4f" % psnr(out2d, oriVideo[aux]))
-print ("Denoise-NLM-Original - SSIM: %.4f \n" % ssim(out2d, oriVideo[aux]))
-
-print ("Denoise-NLM3D-Original - PSNR: %.4f" % psnr(out[aux], oriVideo[aux]))
-print ("Denoise-NLM3D-Original - SSIM: %.4f \n" % ssim(out[aux], oriVideo[aux]))
+print ("Denoise-NLM-Original - PSNR: %.4f" % psnr(out[aux], oriVideo[aux]))
+print ("Denoise-NLM-Original - SSIM: %.4f" % ssim(out[aux], oriVideo[aux]))
 
 print ("Denoise-NLM_and_LBP-Original - PSNR: %.4f" % psnr(outLBP[aux], oriVideo[aux]))
-print ("Denoise-NLM_and_LBP-Original - SSIM: %.4f \n" % ssim(outLBP[aux], oriVideo[aux]))
+print ("Denoise-NLM_and_LBP-Original - SSIM: %.4f" % ssim(outLBP[aux], oriVideo[aux]))
 
 print ("Denoise-LBP-Adaptive - PSNR: %.4f" % psnr(outLBPAdaptive[aux], oriVideo[aux]))
-print ("Denoise-LBP-Adaptive - SSIM: %.4f \n" % ssim(outLBPAdaptive[aux], oriVideo[aux]))
+print ("Denoise-LBP-Adaptive - SSIM: %.4f" % ssim(outLBPAdaptive[aux], oriVideo[aux]))
 
 print ("Denoise-NLM_and_MSB - PSNR: %.4f" % psnr(outMSB[aux], oriVideo[aux]))
-print ("Denoise-NLM_and_MSB - SSIM: %.4f \n" % ssim(outMSB[aux], oriVideo[aux]))
+print ("Denoise-NLM_and_MSB - SSIM: %.4f" % ssim(outMSB[aux], oriVideo[aux]))
 
-print ("Denoise-NLM_LBP_MSB - PSNR: %.4f" % psnr(outMSBLBP[aux], oriVideo[aux]))
-print ("Denoise-NLM_LBP_MSB - SSIM: %.4f \n" % ssim(outMSBLBP[aux], oriVideo[aux]))
+print ("Denoise-NLM_MSB_LBP - PSNR: %.4f" % psnr(outMSBLBP[aux], oriVideo[aux]))
+print ("Denoise-NLM_MSB_LBP - SSIM: %.4f" % ssim(outMSBLBP[aux], oriVideo[aux]))
 
 #Save denoised images
-aux = out2d
+aux = outNLM2D# * 255
 aux = aux.astype(np.uint8)
 denoiseImagePath = pathDenoised + 'NLM2D-denoise.png'
 cv2.imwrite(denoiseImagePath, aux)
 
-for i in range(0, nFrames):
-    aux = out[i]# * 255
-    aux = aux.astype(np.uint8)
-    denoiseImagePath = pathDenoised + 'NLM3D-denoise-' + str(i) + '.png'
-    cv2.imwrite(denoiseImagePath, aux)
+aux = out[aux]# * 255
+aux = aux.astype(np.uint8)
+denoiseImagePath = pathDenoised + 'NLM3D-denoise.png'
+cv2.imwrite(denoiseImagePath, aux)
 
-    aux = outLBP[i]# * 255
-    aux = aux.astype(np.uint8)
-    denoiseImagePath = pathDenoised + 'LBP-denoise-' + str(i) + '.png'
-    cv2.imwrite(denoiseImagePath, aux)
+aux = outLBP[aux]# * 255
+aux = aux.astype(np.uint8)
+denoiseImagePath = pathDenoised + 'LBP-NLM3D-denoise.png'
+cv2.imwrite(denoiseImagePath, aux)
 
-    aux = outLBPAdaptive[i]# * 255
-    aux = aux.astype(np.uint8)
-    denoiseImagePath = pathDenoised + 'LBP-Adaptive-denoise-' + str(i) + '.png'
-    cv2.imwrite(denoiseImagePath, aux)
+aux = outLBPAdaptive[aux]# * 255
+aux = aux.astype(np.uint8)
+denoiseImagePath = pathDenoised + 'LBP-NLM3D-Adaptive-denoise.png'
+cv2.imwrite(denoiseImagePath, aux)
 
-    aux = outMSB[i]# * 255
-    aux = aux.astype(np.uint8)
-    denoiseImagePath = pathDenoised + 'MSB-denoise-' + str(i) + '.png'
-    cv2.imwrite(denoiseImagePath, aux)
+aux = outMSB[aux]# * 255
+aux = aux.astype(np.uint8)
+denoiseImagePath = pathDenoised + 'MSB-NLM3D-denoise.png'
+cv2.imwrite(denoiseImagePath, aux)
 
-    aux = outMSBLBP[i]# * 255
-    aux = aux.astype(np.uint8)
-    denoiseImagePath = pathDenoised + 'MSB-LBP-denoise-' + str(i) + '.png'
-    cv2.imwrite(denoiseImagePath, aux)
+aux = outMSBLBP[aux]# * 255
+aux = aux.astype(np.uint8)
+denoiseImagePath = pathDenoised + 'MSB-LBP-NLM3D-denoise.png'
+cv2.imwrite(denoiseImagePath, aux)

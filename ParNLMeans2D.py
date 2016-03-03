@@ -35,7 +35,6 @@ def processPixel(image, i, j, h, halfWindowSize, halfTemplate, gaussian):
     neighborhood = image[i - halfWindowSize: i + halfWindowSize + 1, \
                         j - halfWindowSize: j + halfWindowSize + 1]
 
-
     print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
     #return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
     return np.sum(w*neighborhood)

@@ -137,7 +137,6 @@ class ParNLMeans3D:
         outLBP = video.copy()
         outMSB = video.copy()
         outMSBLBP = video.copy()
-        #out = np.ones(video.shape)
 
         nFrames = video.shape[0]
         nRows = video.shape[1]

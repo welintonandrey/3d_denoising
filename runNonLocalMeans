@@ -8,6 +8,8 @@ import sys, argparse
 from ParNLMeans3D import *
 from ParNLMeans2D import *
 from compareImages import *
+from operator import itemgetter
+import time
 
 #Parser for input arguments
 # Required = IN, OUT and ORI (Paths)
@@ -89,59 +91,106 @@ for f in oriFrameList:
 #Get index denoised image
 aux = patchSize / 2 + windowSize / 2
 
+#Get start execution time
+start_time = time.time()
+
+#Run NLMeans2D OpenCV
+outOpencv = cv2.fastNlMeansDenoising(np.uint8(noiseVideo[aux]),h=h,templateWindowSize=patchSize,searchWindowSize=windowSize)
+
 #Run NLMeans2D denoised
 nlm2d = ParNLMeans2D(h,patchSize,windowSize)
 outNLM2D = nlm2d.denoise(noiseVideo[aux])
 
 #Run NLMeans3D denoise
-out, outLBPAdaptive, outLBP, outMSB, outMSBLBP = nlm.denoise(noiseVideo)
+outNLM3D, outLBPAdaptive, outLBP, outMSB, outMSBLBP = nlm.denoise(noiseVideo)
+
+#Get final execution time
+total_time = time.time() - start_time
+
+
+#Add PSNR and SSIM in list
+rank = [("NLM2D",psnr(outNLM2D, oriVideo[aux]), ssim(outNLM2D, oriVideo[aux]))];
+rank.append(("NLM2D-OpenCV",psnr(outOpencv.astype(np.float64), oriVideo[aux]), ssim(outOpencv.astype(np.float64), oriVideo[aux])))
+rank.append(("NLM3D",psnr(outNLM3D[aux], oriVideo[aux]), ssim(outNLM3D[aux], oriVideo[aux])))
+rank.append(("NLM3D + LBP",psnr(outLBP[aux], oriVideo[aux]), ssim(outLBP[aux], oriVideo[aux])))
+rank.append(("NLM3D + LBP Adaptive",psnr(outLBPAdaptive[aux], oriVideo[aux]), ssim(outLBPAdaptive[aux], oriVideo[aux])))
+rank.append(("NLM3D + MSB",psnr(outMSB[aux], oriVideo[aux]), ssim(outMSB[aux], oriVideo[aux])))
+rank.append(("NLM3D + MSB + LBP",psnr(outMSBLBP[aux], oriVideo[aux]), ssim(outMSBLBP[aux], oriVideo[aux])))
+
+#Sort by higher SSIM
+rank = sorted(rank, key=itemgetter(2),reverse=True)
+
+# #Show PSNR and SSIM
+print ("\nImage Noise - PSNR: %.4f, SSIM %.4f \n") % \
+            (psnr(noiseVideo[aux], oriVideo[aux]), \
+            ssim(noiseVideo[aux], oriVideo[aux]))
+
+for i in range(0,len(rank)):
+    print (rank[i][0] +" - PSNR: %.4f, SSIM %.4f \n") % \
+                (rank[i][1], \
+                rank[i][2])
 
 #Show PSNR and SSIM
-print ("Noise-Original - PSNR: %.4f" % psnr(noiseVideo[aux], oriVideo[aux]))
-print ("Noise-Original - SSIM: %.4f" % ssim(noiseVideo[aux], oriVideo[aux]))
-
-print ("Denoise-NLM-Original - PSNR: %.4f" % psnr(out[aux], oriVideo[aux]))
-print ("Denoise-NLM-Original - SSIM: %.4f" % ssim(out[aux], oriVideo[aux]))
-
-print ("Denoise-NLM_and_LBP-Original - PSNR: %.4f" % psnr(outLBP[aux], oriVideo[aux]))
-print ("Denoise-NLM_and_LBP-Original - SSIM: %.4f" % ssim(outLBP[aux], oriVideo[aux]))
-
-print ("Denoise-LBP-Adaptive - PSNR: %.4f" % psnr(outLBPAdaptive[aux], oriVideo[aux]))
-print ("Denoise-LBP-Adaptive - SSIM: %.4f" % ssim(outLBPAdaptive[aux], oriVideo[aux]))
-
-print ("Denoise-NLM_and_MSB - PSNR: %.4f" % psnr(outMSB[aux], oriVideo[aux]))
-print ("Denoise-NLM_and_MSB - SSIM: %.4f" % ssim(outMSB[aux], oriVideo[aux]))
-
-print ("Denoise-NLM_MSB_LBP - PSNR: %.4f" % psnr(outMSBLBP[aux], oriVideo[aux]))
-print ("Denoise-NLM_MSB_LBP - SSIM: %.4f" % ssim(outMSBLBP[aux], oriVideo[aux]))
-
 #Save denoised images
-aux = outNLM2D# * 255
-aux = aux.astype(np.uint8)
+aux2 = outNLM2D
+aux2 = aux2.astype(np.uint8)
 denoiseImagePath = pathDenoised + 'NLM2D-denoise.png'
-cv2.imwrite(denoiseImagePath, aux)
+cv2.imwrite(denoiseImagePath, aux2)
 
-aux = out[aux]# * 255
-aux = aux.astype(np.uint8)
+aux2 = outOpencv
+aux2 = aux2.astype(np.uint8)
+denoiseImagePath = pathDenoised + 'NLM2D-OpenCV-denoise.png'
+cv2.imwrite(denoiseImagePath, aux2)
+
+aux2 = outNLM3D[aux]
+aux2 = aux2.astype(np.uint8)
 denoiseImagePath = pathDenoised + 'NLM3D-denoise.png'
-cv2.imwrite(denoiseImagePath, aux)
+cv2.imwrite(denoiseImagePath, aux2)
 
-aux = outLBP[aux]# * 255
-aux = aux.astype(np.uint8)
+aux2 = outLBP[aux]
+aux2 = aux2.astype(np.uint8)
 denoiseImagePath = pathDenoised + 'LBP-NLM3D-denoise.png'
-cv2.imwrite(denoiseImagePath, aux)
+cv2.imwrite(denoiseImagePath, aux2)
 
-aux = outLBPAdaptive[aux]# * 255
-aux = aux.astype(np.uint8)
+aux2 = outLBPAdaptive[aux]
+aux2 = aux2.astype(np.uint8)
 denoiseImagePath = pathDenoised + 'LBP-NLM3D-Adaptive-denoise.png'
-cv2.imwrite(denoiseImagePath, aux)
+cv2.imwrite(denoiseImagePath, aux2)
 
-aux = outMSB[aux]# * 255
-aux = aux.astype(np.uint8)
+aux2 = outMSB[aux]
+aux2 = aux2.astype(np.uint8)
 denoiseImagePath = pathDenoised + 'MSB-NLM3D-denoise.png'
-cv2.imwrite(denoiseImagePath, aux)
+cv2.imwrite(denoiseImagePath, aux2)
 
-aux = outMSBLBP[aux]# * 255
-aux = aux.astype(np.uint8)
+aux2 = outMSBLBP[aux]
+aux2 = aux2.astype(np.uint8)
 denoiseImagePath = pathDenoised + 'MSB-LBP-NLM3D-denoise.png'
-cv2.imwrite(denoiseImagePath, aux)
+cv2.imwrite(denoiseImagePath, aux2)
+
+#Save PSNR and SSIM in file
+text_file = open(pathDenoised + "results.txt", "w")
+
+text_file.write("\n---------------------------------------------\n")
+
+text_file.write("Parameters: \n")
+text_file.write("H: %d\n" % h)
+text_file.write("PatchSize: %d\n" % patchSize)
+text_file.write("WindowSize: %d\n" % windowSize)
+
+text_file.write("---------------------------------------------\n")
+
+text_file.write("Execution Time: %s seconds \n\n" % total_time)
+
+text_file.write("---------------------------------------------\n")
+
+text_file.write(("Image Noise - PSNR: %0.4f, SSIM %.4f \n") % \
+            (psnr(noiseVideo[aux], oriVideo[aux]),\
+             ssim(noiseVideo[aux], oriVideo[aux])))
+
+text_file.write("\n---------------------------------------------\n")
+
+for i in range(0,len(rank)):
+    text_file.write(("%s - PSNR: %.4f, SSIM %.4f \n") % \
+                        (rank[i][0], rank[i][1], rank[i][2]))
+
+text_file.close()

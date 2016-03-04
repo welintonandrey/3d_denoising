@@ -177,9 +177,9 @@ text_file.write("H: %d\n" % h)
 text_file.write("PatchSize: %d\n" % patchSize)
 text_file.write("WindowSize: %d\n" % windowSize)
 
-text_file.write("---------------------------------------------\n")
+text_file.write("\n---------------------------------------------\n")
 
-text_file.write("Execution Time: %s seconds \n\n" % total_time)
+text_file.write("Execution Time: %s \n\n" % time.strftime('%Hhrs %Mmin %Ssec', time.gmtime(total_time)))
 
 text_file.write("---------------------------------------------\n")
 

@@ -22,6 +22,7 @@ parser.add_argument('-H','--filterStrength',help='Input the parameter H (Filter 
 parser.add_argument('-p','--patch',help='Input the size of patch (Neighborhood size of centered voxel)', type=int,required=False, default=7)
 parser.add_argument('-w','--window',help='Input the size of search window (Window size of centered voxel)', type=int,required=False, default=21)
 parser.add_argument('-alg','--algorithm',help='Choose which algorithm will perform ()', choices=['nlm', 'nlmlbp', 'nlm3d', 'nlm3dlbp'], required=False)
+parser.add_argument('-sig','--sigma',help='Value of Sigma (Noise std)', type=int, required=False)
 args = parser.parse_args()
 
 #Convert arguments
@@ -31,6 +32,9 @@ pathOri = args.originals
 h = args.filterStrength
 patchSize = args.patch
 windowSize = args.window
+valueSigma = args.sigma
+
+print ('\n\nNoise sigma: %d, H: %d, PatchSize: %d, WindowSearchSize: %d') % (valueSigma, h, patchSize, windowSize)
 
 #Check if the Path for denoised images exist
 #if don't, create!
@@ -98,10 +102,12 @@ start_time = time.time()
 outOpencv = cv2.fastNlMeansDenoising(np.uint8(noiseVideo[aux]),h=h,templateWindowSize=patchSize,searchWindowSize=windowSize)
 
 #Run NLMeans2D denoised
+print "Run NLMeans2D"
 nlm2d = ParNLMeans2D(h,patchSize,windowSize)
 outNLM2D = nlm2d.denoise(noiseVideo[aux])
 
 #Run NLMeans3D denoise
+print "\nRun NLMeans3D++"
 outNLM3D, outLBPAdaptive, outLBP, outMSB, outMSBLBP = nlm.denoise(noiseVideo)
 
 #Get final execution time
@@ -121,14 +127,14 @@ rank.append(("NLM3D + MSB + LBP",psnr(outMSBLBP[aux], oriVideo[aux]), ssim(outMS
 rank = sorted(rank, key=itemgetter(2),reverse=True)
 
 # #Show PSNR and SSIM
-print ("\nImage Noise - PSNR: %.4f, SSIM %.4f \n") % \
-            (psnr(noiseVideo[aux], oriVideo[aux]), \
-            ssim(noiseVideo[aux], oriVideo[aux]))
-
-for i in range(0,len(rank)):
-    print (rank[i][0] +" - PSNR: %.4f, SSIM %.4f \n") % \
-                (rank[i][1], \
-                rank[i][2])
+# print ("\nImage Noise - PSNR: %.4f, SSIM %.4f \n") % \
+#             (psnr(noiseVideo[aux], oriVideo[aux]), \
+#             ssim(noiseVideo[aux], oriVideo[aux]))
+#
+# for i in range(0,len(rank)):
+#     print (rank[i][0] +" - PSNR: %.4f, SSIM %.4f \n") % \
+#                 (rank[i][1], \
+#                 rank[i][2])
 
 #Show PSNR and SSIM
 #Save denoised images

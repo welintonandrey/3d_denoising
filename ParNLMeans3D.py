@@ -109,8 +109,15 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
     else:
         adaptiveNlmLBP = np.sum(wNlmLBP*neighborhood)
 
-    print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
-    #return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
+    #print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
+    totalPixel = (video.shape[1] - 2*delta) * (video.shape[2] - 2*delta)
+    auxP = ((i-2*delta) * video.shape[2] + (j-delta))
+    auxP = ((100 * auxP) / totalPixel)
+    auxP = 0 if auxP<0 else 100 if i>100 else auxP
+    sys.stdout.write('\rProcessando: %3d%%' % auxP)
+    sys.stdout.flush()
+
+    #Return results
     return np.sum(w*neighborhood), adaptiveNlmLBP, np.sum(wNlmLBP*neighborhood), np.sum(wMSB*neighborhood), np.sum(wMSBNlmLPB*neighborhood)
 
 class ParNLMeans3D:

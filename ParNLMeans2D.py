@@ -2,7 +2,7 @@ import cv2
 import sys
 import numpy as np
 from  scipy import ndimage
-
+import time
 import itertools
 import joblib
 from joblib import Parallel, delayed
@@ -35,8 +35,18 @@ def processPixel(image, i, j, h, halfWindowSize, halfTemplate, gaussian):
     neighborhood = image[i - halfWindowSize: i + halfWindowSize + 1, \
                         j - halfWindowSize: j + halfWindowSize + 1]
 
-    print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
-    #return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
+    #print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
+    totalPixel = (image.shape[0] - 2*delta) * (image.shape[1] - 2*delta)
+    auxP = ((i-delta) * image.shape[1] + (j-delta))
+    #print image.shape
+    auxP = ((100 * auxP) / totalPixel)
+    #print ("%d de %d") % (auxP, totalPixel)
+    auxP = 0 if auxP<0 else 100 if i>100 else auxP
+    sys.stdout.write('\rProcessando: %3d%%' % auxP)
+    sys.stdout.flush()
+    #exit()
+
+    #Return result
     return np.sum(w*neighborhood)
 
 class ParNLMeans2D:
@@ -54,8 +64,6 @@ class ParNLMeans2D:
 
 
         shape = tuple(np.add(imageIn.shape, (2*delta, 2*delta)))
-        print imageIn.shape
-        print shape
         image = np.zeros(shape)
 
         image = cv2.copyMakeBorder(imageIn, delta, delta, delta, delta, cv2.BORDER_REFLECT_101)

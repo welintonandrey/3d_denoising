@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 
-pathOriginalFrames = '/home/tiagosn/git_repos/3D_denoising/seq3/color/'
+pathOriginalFrames = '/home/tiagosn/git_repos/3D_denoising/seq4/color/'
 std = 0
 
 newPath = pathOriginalFrames + 'gaussian_noise-' + str(std)

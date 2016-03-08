@@ -25,6 +25,7 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
     w = np.zeros((ws, ws, ws))
     wMSB = np.zeros((ws, ws, ws))
     wLBP = np.zeros((ws, ws, ws))
+    wMSBNlmLPB = np.zeros((ws, ws, ws))
 
     pc = video[t - halfTemplate: t + halfTemplate + 1, \
                 i - halfTemplate: i + halfTemplate + 1, \
@@ -87,23 +88,37 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
     wMSB[halfWindowSize, halfWindowSize, halfWindowSize] = np.max(wMSB)
     wMSB = wMSB / np.sum(wMSB)
 
-    m = w * wLBP
-    m = m / np.sum(m)
+    # calc w_Intensity_LBP
+    wNlmLBP = w * wLBP
+    wNlmLBP = wNlmLBP / np.sum(wNlmLBP)
+
+    # calc w_Intensity_LBP_MSB
+    wMSBNlmLPB = wNlmLBP * wMSB
+    wMSBNlmLPB = wMSBNlmLPB / np.sum(wMSBNlmLPB)
 
     neighborhood = video[t - halfWindowSize: t + halfWindowSize + 1, \
                         i - halfWindowSize: i + halfWindowSize + 1, \
                         j - halfWindowSize: j + halfWindowSize + 1]
 
-    aux = 0.0
+
+    # calc w_Intensity_LBP_Adaptive
+    adaptiveNlmLBP = 0.0
 
     if nonUniformPixel >= 0.09:
-        aux = np.sum(w*neighborhood)
+        adaptiveNlmLBP = np.sum(w*neighborhood)
     else:
-        aux = np.sum(m*neighborhood)
+        adaptiveNlmLBP = np.sum(wNlmLBP*neighborhood)
 
-    print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
-    #return np.sum(w*neighborhood),  np.sum(wLBP*neighborhood), np.sum(m*neighborhood), nonUniformPixel, nonUniformPixelXY
-    return np.sum(w*neighborhood), aux, np.sum(m*neighborhood), np.sum(wMSB*neighborhood)
+    #print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
+    totalPixel = (video.shape[1] - 2*delta) * (video.shape[2] - 2*delta)
+    auxP = ((i-2*delta) * video.shape[2] + (j-delta))
+    auxP = ((100 * auxP) / totalPixel)
+    auxP = 0 if auxP<0 else 100 if i>100 else auxP
+    sys.stdout.write('\rProcessando: %3d%%' % auxP)
+    sys.stdout.flush()
+
+    #Return results
+    return np.sum(w*neighborhood), adaptiveNlmLBP, np.sum(wNlmLBP*neighborhood), np.sum(wMSB*neighborhood), np.sum(wMSBNlmLPB*neighborhood)
 
 class ParNLMeans3D:
     def __init__(self, h = 3, templateWindowSize = 7, searchWindowSize = 21, sigma = 1, nMSB = 4):
@@ -128,7 +143,7 @@ class ParNLMeans3D:
         outLBPAdaptive = video.copy()
         outLBP = video.copy()
         outMSB = video.copy()
-        #out = np.ones(video.shape)
+        outMSBLBP = video.copy()
 
         nFrames = video.shape[0]
         nRows = video.shape[1]
@@ -160,8 +175,10 @@ class ParNLMeans3D:
             outLBPAdaptive[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][1]
             outLBP[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][2]
             outMSB[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][3]
+            outMSBLBP[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][4]
 
         return out[:, delta: -delta, delta: -delta], \
                 outLBPAdaptive[:, delta: -delta, delta: -delta], \
                 outLBP[:, delta: -delta, delta: -delta],\
-                outMSB[:, delta: -delta, delta: -delta]
+                outMSB[:, delta: -delta, delta: -delta],\
+                outMSBLBP[:, delta: -delta, delta: -delta]

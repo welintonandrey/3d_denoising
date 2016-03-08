@@ -110,8 +110,8 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
         adaptiveNlmLBP = np.sum(wNlmLBP*neighborhood)
 
     #print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
-    totalPixel = (video.shape[1] - 2*delta) * (video.shape[2] - 2*delta)
-    auxP = ((i-2*delta) * video.shape[2] + (j-delta))
+    totalPixel = (video.shape[0] - 2*delta) * (video.shape[1] - 2*delta)
+    auxP = ((i-delta) * video.shape[1] + (j-delta))
     auxP = ((100 * auxP) / totalPixel)
     auxP = 0 if auxP<0 else 100 if i>100 else auxP
     sys.stdout.write('\rProcessando: %3d%%' % auxP)

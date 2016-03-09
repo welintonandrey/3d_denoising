@@ -7,6 +7,8 @@ import itertools
 import joblib
 from joblib import Parallel, delayed
 
+from printProgressBar import *
+
 def processPixel(image, i, j, h, halfWindowSize, halfTemplate, gaussian):
     delta = halfWindowSize + halfTemplate
     ws = 2*halfWindowSize+1
@@ -35,16 +37,9 @@ def processPixel(image, i, j, h, halfWindowSize, halfTemplate, gaussian):
     neighborhood = image[i - halfWindowSize: i + halfWindowSize + 1, \
                         j - halfWindowSize: j + halfWindowSize + 1]
 
-    #print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
     totalPixel = (image.shape[0] - 2*delta) * (image.shape[1] - 2*delta)
-    auxP = ((i-delta) * image.shape[1] + (j-delta))
-    #print image.shape
-    auxP = ((100 * auxP) / totalPixel)
-    #print ("%d de %d") % (auxP, totalPixel)
-    auxP = 0 if auxP<0 else 100 if i>100 else auxP
-    sys.stdout.write('\rProcessando: %3d%%' % auxP)
-    sys.stdout.flush()
-    #exit()
+    auxP = ((i-delta) * (image.shape[1]-2*delta) + (j-delta+1))
+    printProgressBar(auxP, totalPixel)
 
     #Return result
     return np.sum(w*neighborhood)
@@ -82,6 +77,7 @@ class ParNLMeans2D:
 
         ncpus = joblib.cpu_count()
         results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(image, i, j, self.h, halfWindowSize, halfTemplate, gaussian) for i,j in coordinates)
+        printProgressBar(100, 100)
 
         for idx in xrange(0,len(results)):
             out[coordinates[idx][0], coordinates[idx][1]] = results[idx]

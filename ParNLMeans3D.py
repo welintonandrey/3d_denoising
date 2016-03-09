@@ -137,14 +137,10 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
         w_viORI_texLBPMSBAdaptive = np.sum(w_viORI*neighborhood)
     else:
         w_viORI_texLBPMSBAdaptive = np.sum(w_viORI_texLPBMSB*neighborhood)
-
-    #print 'Pixel (%3d, %3d) processed!!! ' % (i-delta, j-delta)
-    totalPixel = (video.shape[1] - 2*delta) * (video.shape[2] - 2*delta)
-    auxP = ((i-delta) * video.shape[2] + (j-delta))
-    auxP = ((100 * auxP) / totalPixel)
-    auxP = 0 if auxP<0 else 100 if i>100 else auxP
-    sys.stdout.write('\rProcessando: %3d%% ' % auxP)
-    sys.stdout.flush()
+ 
+    totalPixel = (image.shape[1] - 2*delta) * (image.shape[2] - 2*delta)
+    auxP = ((i-delta) * (image.shape[2]-2*delta) + (j-delta+1))
+    printProgressBar(auxP, totalPixel)
 
     #Return results
     return np.sum(w_viORI * neighborhood), \
@@ -211,6 +207,7 @@ class ParNLMeans3D:
 
         ncpus = joblib.cpu_count()
         results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, lbpVideosMSB, sizeXY, sizeXT, sizeYT, videoMSB) for t,i,j in coordinates)
+        printProgressBar(100, 100)
 
         for idx in xrange(0,len(results)):
             out_viORI[coordinates[idx][0], coordinates[idx][1], coordinates[idx][2]] = results[idx][0]

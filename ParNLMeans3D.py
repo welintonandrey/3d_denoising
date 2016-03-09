@@ -121,7 +121,7 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
     neighborhood = video[t - halfWindowSize: t + halfWindowSize + 1, \
                         i - halfWindowSize: i + halfWindowSize + 1, \
                         j - halfWindowSize: j + halfWindowSize + 1]
-    
+
     # Calc and Normalize weights matrix (video = Ori, texture = LBP Adaptive)
     nonUniformPixel = (histc[9] + histc[19] + histc[29])
     w_viORI_texLBPAdaptive = 0.0

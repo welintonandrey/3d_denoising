@@ -10,6 +10,8 @@ from joblib import Parallel, delayed
 from LBPTOP import *
 from bob.ip.base import LBP
 
+from printProgressBar import *
+
 def hist(lbpVideos, ti, tf, ri, rf, ci, cf, sizeXY, sizeXT, sizeYT):
     d = 0.0001
 
@@ -137,9 +139,9 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
         w_viORI_texLBPMSBAdaptive = np.sum(w_viORI*neighborhood)
     else:
         w_viORI_texLBPMSBAdaptive = np.sum(w_viORI_texLPBMSB*neighborhood)
- 
-    totalPixel = (image.shape[1] - 2*delta) * (image.shape[2] - 2*delta)
-    auxP = ((i-delta) * (image.shape[2]-2*delta) + (j-delta+1))
+
+    totalPixel = (video.shape[1] - 2*delta) * (video.shape[2] - 2*delta)
+    auxP = ((i-delta) * (video.shape[2]-2*delta) + (j-delta+1))
     printProgressBar(auxP, totalPixel)
 
     #Return results

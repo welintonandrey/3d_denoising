@@ -110,7 +110,7 @@ outNLM2D = nlm2d.denoise(noiseVideo[aux])
 
 #Run NLMeans3D denoise
 print "\nRun NLMeans3D++"
-nlm3d_viORI, nlm3d_texLBP, nlm3d_texLBPMSB, nlm3d_viORI_texLBPAdaptive,\
+nlm3d_viORI, nlm3d_viORI_texLBP, nlm3d_viORI_texLBPMSB, nlm3d_viORI_texLBPAdaptive,\
     nlm3d_viORI_texLBPMSBAdaptive, nlm3d_viMSB, nlm3d_viMSB_texLBP, \
     nlm3d_viMSB_texLBPMSB = nlm.denoise(noiseVideo)
 
@@ -118,84 +118,21 @@ nlm3d_viORI, nlm3d_texLBP, nlm3d_texLBPMSB, nlm3d_viORI_texLBPAdaptive,\
 total_time = time.time() - start_time
 
 #Add PSNR and SSIM in list
-rank = [("NLM2D",psnr(outNLM2D, oriVideo[aux]), ssim(outNLM2D, oriVideo[aux]))];
-rank.append(("NLM2D-OpenCV",psnr(outOpencv.astype(np.float64), oriVideo[aux]), ssim(outOpencv.astype(np.float64), oriVideo[aux])))
-rank.append(("NLM3D",psnr(nlm3d_viORI[aux], oriVideo[aux]), ssim(nlm3d_viORI[aux], oriVideo[aux])))
-rank.append(("NLM3D_viORI_texLBP",psnr(nlm3d_texLBP[aux], oriVideo[aux]), ssim(nlm3d_texLBP[aux], oriVideo[aux])))
-rank.append(("NLM3D_viORI_texLBP-MSB",psnr(nlm3d_texLBPMSB[aux], oriVideo[aux]), ssim(nlm3d_texLBPMSB[aux], oriVideo[aux])))
-rank.append(("NLM3D_viORI_texLBP_Adaptive",psnr(nlm3d_viORI_texLBPAdaptive[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPAdaptive[aux], oriVideo[aux])))
-rank.append(("NLM3D_viORI_texLBP-MSB_Adaptive",psnr(nlm3d_viORI_texLBPMSBAdaptive[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPMSBAdaptive[aux], oriVideo[aux])))
-rank.append(("NLM3D_viMSB",psnr(nlm3d_viMSB[aux], oriVideo[aux]), ssim(nlm3d_viMSB[aux], oriVideo[aux])))
-rank.append(("NLM3D_viMSB_texLBP",psnr(nlm3d_viMSB_texLBP[aux], oriVideo[aux]), ssim(nlm3d_viMSB_texLBP[aux], oriVideo[aux])))
-rank.append(("NLM3D_viMSB_texLBP-MSB",psnr(nlm3d_viMSB_texLBPMSB[aux], oriVideo[aux]), ssim(nlm3d_viMSB_texLBPMSB[aux], oriVideo[aux])))
+rank = [("NLM2D",psnr(outNLM2D, oriVideo[aux]), ssim(outNLM2D, oriVideo[aux]),outNLM2D)];
+rank.append(("NLM2D-OpenCV",psnr(outOpencv.astype(np.float64), oriVideo[aux]), ssim(outOpencv.astype(np.float64), oriVideo[aux]),outOpencv))
+rank.append(("NLM3D",psnr(nlm3d_viORI[aux], oriVideo[aux]), ssim(nlm3d_viORI[aux], oriVideo[aux]),nlm3d_viORI[aux]))
+rank.append(("NLM3D_viORI_texLBP",psnr(nlm3d_viORI_texLBP[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBP[aux], oriVideo[aux]),nlm3d_viORI_texLBP[aux]))
+rank.append(("NLM3D_viORI_texLBP-MSB",psnr(nlm3d_viORI_texLBPMSB[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPMSB[aux], oriVideo[aux]),nlm3d_viORI_texLBPMSB[aux]))
+rank.append(("NLM3D_viORI_texLBP_Adaptive",psnr(nlm3d_viORI_texLBPAdaptive[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPAdaptive[aux], oriVideo[aux]),nlm3d_viORI_texLBPAdaptive[aux]))
+rank.append(("NLM3D_viORI_texLBP-MSB_Adaptive",psnr(nlm3d_viORI_texLBPMSBAdaptive[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPMSBAdaptive[aux], oriVideo[aux]),nlm3d_viORI_texLBPMSBAdaptive[aux]))
+rank.append(("NLM3D_viMSB",psnr(nlm3d_viMSB[aux], oriVideo[aux]), ssim(nlm3d_viMSB[aux], oriVideo[aux]),nlm3d_viMSB[aux]))
+rank.append(("NLM3D_viMSB_texLBP",psnr(nlm3d_viMSB_texLBP[aux], oriVideo[aux]), ssim(nlm3d_viMSB_texLBP[aux], oriVideo[aux]),nlm3d_viMSB_texLBP[aux]))
+rank.append(("NLM3D_viMSB_texLBP-MSB",psnr(nlm3d_viMSB_texLBPMSB[aux], oriVideo[aux]), ssim(nlm3d_viMSB_texLBPMSB[aux], oriVideo[aux]),nlm3d_viMSB_texLBPMSB[aux]))
 
 #Sort by higher SSIM
 rank = sorted(rank, key=itemgetter(2),reverse=True)
 
-# #Show PSNR and SSIM
-# print ("\nImage Noise - PSNR: %.4f, SSIM %.4f \n") % \
-#             (psnr(noiseVideo[aux], oriVideo[aux]), \
-#             ssim(noiseVideo[aux], oriVideo[aux]))
-#
-# for i in range(0,len(rank)):
-#     print (rank[i][0] +" - PSNR: %.4f, SSIM %.4f \n") % \
-#                 (rank[i][1], \
-#                 rank[i][2])
-
-#Show PSNR and SSIM
-#Save denoised images
-aux2 = outNLM2D
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM2D-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = outOpencv
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM2D-OpenCV-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = nlm3d_viORI[aux]
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM3D-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = nlm3d_texLBP[aux]
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM3D_texLBP-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = nlm3d_texLBPMSB[aux]
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM3D_texLBPMSB-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = nlm3d_viORI_texLBPAdaptive[aux]
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM3D_texLBPAdaptive-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = nlm3d_viORI_texLBPMSBAdaptive[aux]
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM3D_texLBPMSBAdaptive-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = nlm3d_viMSB[aux]
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM3D_viMSB-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = nlm3d_viMSB_texLBP[aux]
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM3D_viMSB_texLBP-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-aux2 = nlm3d_viMSB_texLBPMSB[aux]
-aux2 = aux2.astype(np.uint8)
-denoiseImagePath = pathDenoised + 'NLM3D_viMSB_texLBPMSB-denoise.png'
-cv2.imwrite(denoiseImagePath, aux2)
-
-
-#Save PSNR and SSIM in file
+#Save Results
 text_file = open(pathDenoised + "results.txt", "w")
 
 text_file.write("\n---------------------------------------------\n")
@@ -218,7 +155,12 @@ text_file.write(("Image Noise - PSNR: %0.4f, SSIM %.4f \n") % \
 text_file.write("\n---------------------------------------------\n")
 
 for i in range(0,len(rank)):
+    #Writing result
     text_file.write(("%s - PSNR: %.4f, SSIM %.4f \n") % \
                         (rank[i][0], rank[i][1], rank[i][2]))
+    #Writing image
+    aux2 = rank[i][3].astype(np.uint8)
+    denoiseImagePath = pathDenoised + rank[i][0] + '.png'
+    cv2.imwrite(denoiseImagePath, aux2)
 
 text_file.close()

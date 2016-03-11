@@ -22,7 +22,8 @@ parser.add_argument('-H','--filterStrength',help='Input the parameter H (Filter 
 parser.add_argument('-p','--patch',help='Input the size of patch (Neighborhood size of centered voxel)', type=int,required=False, default=7)
 parser.add_argument('-w','--window',help='Input the size of search window (Window size of centered voxel)', type=int,required=False, default=21)
 parser.add_argument('-alg','--algorithm',help='Choose which algorithm will perform ()', choices=['nlm', 'nlmlbp', 'nlm3d', 'nlm3dlbp'], required=False)
-parser.add_argument('-sig','--sigma',help='Value of Sigma (Noise std)', type=int, required=False)
+parser.add_argument('-sig','--sigma',help='Value of Sigma (Noise std)', type=int, required=False, default=0)
+parser.add_argument('-msb','--MSBValue',help='Value of Most Significant Bit', type=int, required=False, default=4)
 args = parser.parse_args()
 
 #Convert arguments
@@ -33,8 +34,12 @@ h = args.filterStrength
 patchSize = args.patch
 windowSize = args.window
 valueSigma = args.sigma
+valueMSB = args.MSBValue
 
-print ('\n\nNoise sigma: %d, H: %d, PatchSize: %d, WindowSearchSize: %d') % (valueSigma, h, patchSize, windowSize)
+if valueSigma == 0:
+    print ('\nH: %d, PatchSize: %d, WindowSearchSize: %d') % (h, patchSize, windowSize)
+else:
+    print ('\nNoise sigma: %d, H: %d, PatchSize: %d, WindowSearchSize: %d') % (valueSigma, h, patchSize, windowSize)
 
 #Check if the Path for denoised images exist
 #if don't, create!
@@ -51,17 +56,17 @@ oriFrameList = [f for f in oriFrameList if '.png' in f]
 
 # filters only ONE frame
 n = (patchSize / 2) * 2 + (windowSize / 2) * 2 + 1
-#noiseFrameList = noiseFrameList[len(noiseFrameList) / 2 - n/2:len(noiseFrameList) / 2 + n/2 + 1]
-#oriFrameList = oriFrameList[len(noiseFrameList) / 2 - n/2:len(noiseFrameList) / 2 + n/2 + 1]
-noiseFrameList = noiseFrameList[0:n]
-oriFrameList = oriFrameList[0:n]
+noiseFrameList = noiseFrameList[len(noiseFrameList) / 2 - n/2:len(noiseFrameList) / 2 + n/2 + 1]
+oriFrameList = oriFrameList[len(noiseFrameList) / 2 - n/2:len(noiseFrameList) / 2 + n/2 + 1]
+#noiseFrameList = noiseFrameList[0:n]
+#oriFrameList = oriFrameList[0:n]
 
 #Auxiliar
 nFrames = len(noiseFrameList)
 i = 0
 
 #Create a NLMeans3D object
-nlm = ParNLMeans3D(h,patchSize,windowSize)
+nlm = ParNLMeans3D(h = h, templateWindowSize = patchSize, searchWindowSize = windowSize, nMSB = valueMSB)
 
 #Read noise frames
 for f in noiseFrameList:
@@ -114,6 +119,8 @@ nlm3d_viORI, nlm3d_viORI_texLBP, nlm3d_viORI_texLBPMSB, nlm3d_viORI_texLBPAdapti
     nlm3d_viORI_texLBPMSBAdaptive, nlm3d_viMSB, nlm3d_viMSB_texLBP, \
     nlm3d_viMSB_texLBPMSB = nlm.denoise(noiseVideo)
 
+print "\n"
+
 #Get final execution time
 total_time = time.time() - start_time
 
@@ -153,6 +160,13 @@ text_file.write(("Image Noise - PSNR: %0.4f, SSIM %.4f \n") % \
              ssim(noiseVideo[aux], oriVideo[aux])))
 
 text_file.write("\n---------------------------------------------\n")
+
+#Save noise and original image
+denoiseImagePath = pathDenoised + 'original.png'
+cv2.imwrite(denoiseImagePath, oriVideo[aux])
+
+denoiseImagePath = pathDenoised + 'noise.png'
+cv2.imwrite(denoiseImagePath, noiseVideo[aux])
 
 for i in range(0,len(rank)):
     #Writing result

@@ -208,7 +208,7 @@ class ParNLMeans3D:
         sizeYT = lbpTop.getMaxYT()
 
         ncpus = joblib.cpu_count()
-        results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, lbpVideosMSB, sizeXY, sizeXT, sizeYT, videoMSB) for t,i,j in coordinates)
+        results = Parallel(n_jobs=ncpus,max_nbytes=4e9)(delayed(processPixel)(video, t, i, j, self.h, halfWindowSize, halfTemplate, gaussian, lbpVideos, lbpVideosMSB, sizeXY, sizeXT, sizeYT, videoMSB) for t,i,j in coordinates)
         printProgressBar(100, 100)
 
         for idx in xrange(0,len(results)):

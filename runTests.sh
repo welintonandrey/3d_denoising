@@ -50,16 +50,16 @@ fi
 
 if [ "$SIGMA" -le 15 ]
 then
-  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h10-p3-w5/ -ori $FOLDER$IMAGES/original/ -H 10 -p 3 -w 5 -sig $SIGMA -msb $MSB;
-  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h15-p3-w5/ -ori $FOLDER$IMAGES/original/ -H 15 -p 3 -w 5 -sig $SIGMA -msb $MSB;
-  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h20-p3-w5/ -ori $FOLDER$IMAGES/original/ -H 20 -p 3 -w 5 -sig $SIGMA -msb $MSB;
-  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h25-p3-w5/ -ori $FOLDER$IMAGES/original/ -H 25 -p 3 -w 5 -sig $SIGMA -msb $MSB;
+  for h in {10,15,20,25}
+  do
+    ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h$h-p3-w5/ -ori $FOLDER$IMAGES/original/ -H $h -p 3 -w 5 -sig $SIGMA -msb $MSB;
+  done
 fi
 
 for w in {5,7,9,13}
 do
-  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h10-p5-w$w/ -ori $FOLDER$IMAGES/original/ -H 10 -p 5 -w $w -sig $SIGMA -msb $MSB;
-  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h15-p5-w$w/ -ori $FOLDER$IMAGES/original/ -H 15 -p 5 -w $w -sig $SIGMA -msb $MSB;
-  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h20-p5-w$w/ -ori $FOLDER$IMAGES/original/ -H 20 -p 5 -w $w -sig $SIGMA -msb $MSB;
-  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h25-p5-w$w/ -ori $FOLDER$IMAGES/original/ -H 25 -p 5 -w $w -sig $SIGMA -msb $MSB;
+  for h in {10,15,20,25}
+  do
+    ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h$h-p5-w$w/ -ori $FOLDER$IMAGES/original/ -H $h -p 5 -w $w -sig $SIGMA -msb $MSB;
+  done
 done

@@ -4,6 +4,9 @@ import os
 import cv2
 import numpy as np
 import sys, argparse
+
+import sqlite3 as sl
+
 #from NLMeans3D import *
 from ParNLMeans3D import *
 from ParNLMeans2D import *
@@ -24,6 +27,7 @@ parser.add_argument('-w','--window',help='Input the size of search window (Windo
 parser.add_argument('-alg','--algorithm',help='Choose which algorithm will perform ()', choices=['nlm', 'nlmlbp', 'nlm3d', 'nlm3dlbp'], required=False)
 parser.add_argument('-sig','--sigma',help='Value of Sigma (Noise std)', type=int, required=False, default=0)
 parser.add_argument('-msb','--MSBValue',help='Value of Most Significant Bit', type=int, required=False, default=4)
+parser.add_argument('-seq','--sequence', help='Sequence name',required=True)
 args = parser.parse_args()
 
 #Convert arguments
@@ -35,6 +39,7 @@ patchSize = args.patch
 windowSize = args.window
 valueSigma = args.sigma
 valueMSB = args.MSBValue
+seq = args.sequence
 
 if valueSigma == 0:
     print ('\nH: %d, PatchSize: %d, WindowSearchSize: %d') % (h, patchSize, windowSize)
@@ -168,7 +173,14 @@ cv2.imwrite(denoiseImagePath, oriVideo[aux])
 denoiseImagePath = pathDenoised + 'noise.png'
 cv2.imwrite(denoiseImagePath, noiseVideo[aux])
 
+conn = sqlite3.connect('3d_denoising_results.db')
+c = conn.cursor()
+
 for i in range(0,len(rank)):
+    # Insert a row of data
+    t = [seq, valueSigma, rank[i][0], h, patchSize, windowSize, valueMSB, rank[i][1], rank[i][2]]
+    c.execute("insert into results values (?,?,?,?,?,?,?,?,?)", t)
+
     #Writing result
     text_file.write(("%s - PSNR: %.4f, SSIM %.4f \n") % \
                         (rank[i][0], rank[i][1], rank[i][2]))
@@ -178,3 +190,7 @@ for i in range(0,len(rank)):
     cv2.imwrite(denoiseImagePath, aux2)
 
 text_file.close()
+
+# Save (commit) the changes and close DB connection
+conn.commit()
+conn.close()

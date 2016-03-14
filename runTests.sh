@@ -52,7 +52,7 @@ if [ "$SIGMA" -le 15 ]
 then
   for h in {10,15,20,25}
   do
-    ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h$h-p3-w5/ -ori $FOLDER$IMAGES/original/ -H $h -p 3 -w 5 -sig $SIGMA -msb $MSB;
+    ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h$h-p3-w5/ -ori $FOLDER$IMAGES/original/ -H $h -p 3 -w 5 -sig $SIGMA -msb $MSB -seg $IMAGES
   done
 fi
 
@@ -60,6 +60,6 @@ for w in {5,7,9,13}
 do
   for h in {10,15,20,25}
   do
-    ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h$h-p5-w$w/ -ori $FOLDER$IMAGES/original/ -H $h -p 5 -w $w -sig $SIGMA -msb $MSB;
+    ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-h$h-p5-w$w/ -ori $FOLDER$IMAGES/original/ -H $h -p 5 -w $w -sig $SIGMA -msb $MSB -seg $IMAGES
   done
 done

@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import sys, argparse
 
-import sqlite3 as sl
+import sqlite3
 
 #from NLMeans3D import *
 from ParNLMeans3D import *
@@ -28,6 +28,7 @@ parser.add_argument('-alg','--algorithm',help='Choose which algorithm will perfo
 parser.add_argument('-sig','--sigma',help='Value of Sigma (Noise std)', type=int, required=False, default=0)
 parser.add_argument('-msb','--MSBValue',help='Value of Most Significant Bit', type=int, required=False, default=4)
 parser.add_argument('-seq','--sequence', help='Sequence name',required=True)
+parser.add_argument('-f','--folder', help='Input PATH with all sequence folders',required=True)
 args = parser.parse_args()
 
 #Convert arguments
@@ -173,7 +174,7 @@ cv2.imwrite(denoiseImagePath, oriVideo[aux])
 denoiseImagePath = pathDenoised + 'noise.png'
 cv2.imwrite(denoiseImagePath, noiseVideo[aux])
 
-conn = sqlite3.connect('3d_denoising_results.db')
+conn = sqlite3.connect(args.folder + '3d_denoising_results.db')
 c = conn.cursor()
 
 for i in range(0,len(rank)):

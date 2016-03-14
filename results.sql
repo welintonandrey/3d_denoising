@@ -24,4 +24,4 @@ insert into results values ('seq4', 20, 'NLM-3D-MSB', 10, 3, 5, 2, 23.12, 0.95);
 select seq, sigma, method, h, p, w, msb, psnr, max(ssim)
 from results
 group by seq, sigma, method, h, p, w, msb
-order by ssim desc;
+order by seq, ssim desc;

@@ -56,7 +56,7 @@ then
   done
 fi
 
-for w in {5,7,9,13}
+for w in {7,9,11,13}
 do
   for h in {10,15,20,25}
   do

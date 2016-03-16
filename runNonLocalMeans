@@ -63,7 +63,7 @@ oriFrameList = [f for f in oriFrameList if '.png' in f]
 # filters only ONE frame
 n = (patchSize / 2) * 2 + (windowSize / 2) * 2 + 1
 noiseFrameList = noiseFrameList[len(noiseFrameList) / 2 - n/2:len(noiseFrameList) / 2 + n/2 + 1]
-oriFrameList = oriFrameList[len(noiseFrameList) / 2 - n/2:len(noiseFrameList) / 2 + n/2 + 1]
+oriFrameList = oriFrameList[len(oriFrameList) / 2 - n/2:len(oriFrameList) / 2 + n/2 + 1]
 #noiseFrameList = noiseFrameList[0:n]
 #oriFrameList = oriFrameList[0:n]
 

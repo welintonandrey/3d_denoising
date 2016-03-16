@@ -48,13 +48,11 @@ else
 	done
 fi
 
-if [ "$SIGMA" -le 15 ]
-then
-  for h in {10,15,20,25}
-  do
-    ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-p3-w5-h$h/ -ori $FOLDER$IMAGES/original/ -H $h -p 3 -w 5 -sig $SIGMA -msb $MSB -seq $IMAGES -f $FOLDER
-  done
-fi
+
+for h in {10,15,20,25}
+do
+  ./runNonLocalMeans -in $FOLDER$IMAGES/noise$SIGMA/ -out  $FOLDER$IMAGES/res/sigma$SIGMA/res-sigma$SIGMA-p3-w5-h$h/ -ori $FOLDER$IMAGES/original/ -H $h -p 3 -w 5 -sig $SIGMA -msb $MSB -seq $IMAGES -f $FOLDER
+done
 
 for w in {7,9,11,13}
 do

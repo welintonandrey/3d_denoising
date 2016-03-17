@@ -2,9 +2,16 @@ import os
 import cv2
 import numpy as np
 
+import sys, argparse
 
-pathOriginalFrames = '/home/tiagosn/git_repos/3D_denoising/seq4/color/'
-std = 0
+parser = argparse.ArgumentParser(description='Script for insert noise in images.')
+parser.add_argument('-in','--input', help='Input PATH with the input images (Color images)',required=True)
+parser.add_argument('-sig','--sigma',help='Input the parameter Sigma (Noise value)', type=int, required=False)
+
+args = parser.parse_args()
+
+pathOriginalFrames = args.input
+std = args.sigma
 
 newPath = pathOriginalFrames + 'gaussian_noise-' + str(std)
 if not os.path.exists(newPath):
@@ -17,8 +24,11 @@ for f in frameList:
     original = cv2.imread(originalImagePath, cv2.IMREAD_GRAYSCALE)
     gray = original.astype(np.float64)#/255.0
 
-    noise = np.random.normal(0, std, gray.shape)
-    noiseImage = gray + noise
+    if std == 0:
+        noiseImage = gray
+    else:
+        noise = np.random.normal(0, std, gray.shape)
+        noiseImage = gray + noise
 
     noiseImage[noiseImage > 255.0] = 255.0
     noiseImage[noiseImage < 0.0] = 0.0

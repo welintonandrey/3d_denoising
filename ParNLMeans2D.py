@@ -61,8 +61,8 @@ def processPixel(image, i, j, h, halfWindowSize, halfTemplate, gaussian, imgLBP,
     # Aux (Not returned)
     hs = np.std(w_texLBP)
     w_texLBP = np.exp(-w_texLBP/hs)
-    w_texLBP[halfWindowSize, halfWindowSize, halfWindowSize] = 0.0
-    w_texLBP[halfWindowSize, halfWindowSize, halfWindowSize] = np.max(w_texLBP)
+    w_texLBP[halfWindowSize, halfWindowSize] = 0.0
+    w_texLBP[halfWindowSize, halfWindowSize] = np.max(w_texLBP)
     w_texLBP = w_texLBP / np.sum(w_texLBP)
 
     # Calc and Normalize weights matrix (texture = LBP)

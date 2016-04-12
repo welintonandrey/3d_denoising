@@ -117,13 +117,13 @@ outOpencv = cv2.fastNlMeansDenoising(np.uint8(noiseVideo[aux]),h=h,templateWindo
 #Run NLMeans2D denoised
 print "Run NLMeans2D"
 nlm2d = ParNLMeans2D(h,patchSize,windowSize)
-outNLM2D = nlm2d.denoise(noiseVideo[aux])
+outNLM2D, outNLM2DLBP = nlm2d.denoise(noiseVideo[aux])
 
 #Run NLMeans3D denoise
-print "\nRun NLMeans3D++"
-nlm3d_viORI, nlm3d_viORI_texLBP, nlm3d_viORI_texLBPMSB, nlm3d_viORI_texLBPAdaptive,\
-    nlm3d_viORI_texLBPMSBAdaptive, nlm3d_viMSB, nlm3d_viMSB_texLBP, \
-    nlm3d_viMSB_texLBPMSB = nlm.denoise(noiseVideo)
+#print "\nRun NLMeans3D++"
+#nlm3d_viORI, nlm3d_viORI_texLBP, nlm3d_viORI_texLBPMSB, nlm3d_viORI_texLBPAdaptive,\
+#    nlm3d_viORI_texLBPMSBAdaptive, nlm3d_viMSB, nlm3d_viMSB_texLBP, \
+#    nlm3d_viMSB_texLBPMSB = nlm.denoise(noiseVideo)
 
 print "\n"
 
@@ -132,21 +132,22 @@ total_time = time.time() - start_time
 
 #Add PSNR and SSIM in list
 rank = [("NLM2D",psnr(outNLM2D, oriVideo[aux]), ssim(outNLM2D, oriVideo[aux]),outNLM2D)];
+rank.append(("NLM2D-LBP",psnr(outNLM2DLBP, oriVideo[aux]), ssim(outNLM2DLBP, oriVideo[aux]),outNLM2DLBP))
 rank.append(("NLM2D-OpenCV",psnr(outOpencv.astype(np.float64), oriVideo[aux]), ssim(outOpencv.astype(np.float64), oriVideo[aux]),outOpencv))
-rank.append(("NLM3D",psnr(nlm3d_viORI[aux], oriVideo[aux]), ssim(nlm3d_viORI[aux], oriVideo[aux]),nlm3d_viORI[aux]))
-rank.append(("NLM3D_viORI_texLBP",psnr(nlm3d_viORI_texLBP[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBP[aux], oriVideo[aux]),nlm3d_viORI_texLBP[aux]))
-rank.append(("NLM3D_viORI_texLBP-MSB",psnr(nlm3d_viORI_texLBPMSB[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPMSB[aux], oriVideo[aux]),nlm3d_viORI_texLBPMSB[aux]))
-rank.append(("NLM3D_viORI_texLBP_Adaptive",psnr(nlm3d_viORI_texLBPAdaptive[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPAdaptive[aux], oriVideo[aux]),nlm3d_viORI_texLBPAdaptive[aux]))
-rank.append(("NLM3D_viORI_texLBP-MSB_Adaptive",psnr(nlm3d_viORI_texLBPMSBAdaptive[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPMSBAdaptive[aux], oriVideo[aux]),nlm3d_viORI_texLBPMSBAdaptive[aux]))
-rank.append(("NLM3D_viMSB",psnr(nlm3d_viMSB[aux], oriVideo[aux]), ssim(nlm3d_viMSB[aux], oriVideo[aux]),nlm3d_viMSB[aux]))
-rank.append(("NLM3D_viMSB_texLBP",psnr(nlm3d_viMSB_texLBP[aux], oriVideo[aux]), ssim(nlm3d_viMSB_texLBP[aux], oriVideo[aux]),nlm3d_viMSB_texLBP[aux]))
-rank.append(("NLM3D_viMSB_texLBP-MSB",psnr(nlm3d_viMSB_texLBPMSB[aux], oriVideo[aux]), ssim(nlm3d_viMSB_texLBPMSB[aux], oriVideo[aux]),nlm3d_viMSB_texLBPMSB[aux]))
+#rank.append(("NLM3D",psnr(nlm3d_viORI[aux], oriVideo[aux]), ssim(nlm3d_viORI[aux], oriVideo[aux]),nlm3d_viORI[aux]))
+#rank.append(("NLM3D_viORI_texLBP",psnr(nlm3d_viORI_texLBP[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBP[aux], oriVideo[aux]),nlm3d_viORI_texLBP[aux]))
+#rank.append(("NLM3D_viORI_texLBP-MSB",psnr(nlm3d_viORI_texLBPMSB[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPMSB[aux], oriVideo[aux]),nlm3d_viORI_texLBPMSB[aux]))
+#rank.append(("NLM3D_viORI_texLBP_Adaptive",psnr(nlm3d_viORI_texLBPAdaptive[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPAdaptive[aux], oriVideo[aux]),nlm3d_viORI_texLBPAdaptive[aux]))
+#rank.append(("NLM3D_viORI_texLBP-MSB_Adaptive",psnr(nlm3d_viORI_texLBPMSBAdaptive[aux], oriVideo[aux]), ssim(nlm3d_viORI_texLBPMSBAdaptive[aux], oriVideo[aux]),nlm3d_viORI_texLBPMSBAdaptive[aux]))
+#rank.append(("NLM3D_viMSB",psnr(nlm3d_viMSB[aux], oriVideo[aux]), ssim(nlm3d_viMSB[aux], oriVideo[aux]),nlm3d_viMSB[aux]))
+#rank.append(("NLM3D_viMSB_texLBP",psnr(nlm3d_viMSB_texLBP[aux], oriVideo[aux]), ssim(nlm3d_viMSB_texLBP[aux], oriVideo[aux]),nlm3d_viMSB_texLBP[aux]))
+#rank.append(("NLM3D_viMSB_texLBP-MSB",psnr(nlm3d_viMSB_texLBPMSB[aux], oriVideo[aux]), ssim(nlm3d_viMSB_texLBPMSB[aux], oriVideo[aux]),nlm3d_viMSB_texLBPMSB[aux]))
 
 #Sort by higher SSIM
 rank = sorted(rank, key=itemgetter(2),reverse=True)
 
 #Save Results
-text_file = open(pathDenoised + "results.txt", "w")
+text_file = open(pathDenoised + "results-2D.txt", "w")
 
 text_file.write("\n---------------------------------------------\n")
 

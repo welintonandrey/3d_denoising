@@ -52,8 +52,8 @@ class LBPTOP:
     def describe(self, cuboid):
         codes = self.generateCodes(cuboid)
 
-        hists = np.concatenate((np.histogram(codes['xy'], self.lbpTop.xy.max_label)[0], \
-                                np.histogram(codes['xt'], self.lbpTop.xt.max_label)[0], \
-                                np.histogram(codes['yt'], self.lbpTop.yt.max_label)[0]))
+        hists = np.concatenate((np.histogram(codes['xy'], self.lbpTop.xy.max_label,(0,self.lbpTop.xy.max_label))[0], \
+                                np.histogram(codes['xt'], self.lbpTop.xt.max_label,(0,self.lbpTop.xt.max_label))[0], \
+                                np.histogram(codes['yt'], self.lbpTop.yt.max_label,(0,self.lbpTop.yt.max_label))[0]))
 
         return hists

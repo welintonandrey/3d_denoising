@@ -10,27 +10,42 @@ from bob.ip.base import *
 
 from printProgressBar import *
 
-def processPixel(image, i, j, h, halfWindowSize, halfTemplate, gaussian):
+def hist(lbpimg, ri, rf, ci, cf, size):
+    d = 0.0001
+
+    hist = np.histogram(lbpimg[ri:rf,ci:cf], size, (0,size))[0] + d
+    hist = hist / np.sum(hist)
+
+    return hist
+
+def processPixel(image, i, j, h, halfWindowSize, halfTemplate, gaussian, imgLBP, size):
     delta = halfWindowSize + halfTemplate
     ws = 2*halfWindowSize+1
     w = np.zeros((ws, ws))
     w_texLBP = np.zeros((ws, ws))
 
-    pc = image[i - halfTemplate: i + halfTemplate + 1, \
-                j - halfTemplate: j + halfTemplate + 1]
+    ia = i - halfTemplate
+    ib = i + halfTemplate + 1
+    ja = j - halfTemplate
+    jb = j + halfTemplate + 1
 
-    lbp = bob.ip.base.LBP(8, uniform=True, rotation_invariant=True);
-    histc = np.histogram(lbp.extract(pc), lbp.max_label, (0,lbp.max_label))[0]
+    pc = image[ia: ib, ja: jb]
+
+    histc = hist(imgLBP, ia, ib, ja, jb, size)
 
     for ii in xrange(i - halfWindowSize, i + halfWindowSize + 1):
         for jj in xrange(j - halfWindowSize, j + halfWindowSize + 1):
-            pn = image[ii - halfTemplate: ii + halfTemplate + 1, \
-                        jj - halfTemplate: jj + halfTemplate + 1]
+            i1 = ii - halfTemplate
+            i2 = ii + halfTemplate + 1
+            j1 = jj - halfTemplate
+            j2 = jj + halfTemplate + 1
+
+            pn = image[i1: i2, j1: j2]
 
             iw = ii - i + halfWindowSize
             jw = jj - j + halfWindowSize
 
-            histn = np.histogram(lbp.extract(pn), lbp.max_label, (0,lbp.max_label))[0]
+            histn = hist(imgLBP, i1, i2, j1, j2, size)
             w_texLBP[iw, jw] =  np.sum(((histc - histn)**2) / (histc + histn))
 
             dist2 = np.sum(((pc-pn)**2)*gaussian)
@@ -93,11 +108,14 @@ class ParNLMeans2D:
         aux[halfTemplate, halfTemplate] = 1
         gaussian = ndimage.filters.gaussian_filter(aux, self.sigma)
 
+        lbp = bob.ip.base.LBP(8, uniform=True, rotation_invariant=True);
+        imgLBP = lbp.extract(image.copy())
+
         ranges = [range(delta, nRows - delta), range(delta, nCols - delta)]
         coordinates = list(itertools.product(*ranges))
 
         ncpus = joblib.cpu_count()
-        results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(image, i, j, self.h, halfWindowSize, halfTemplate, gaussian) for i,j in coordinates)
+        results = Parallel(n_jobs=ncpus,max_nbytes=2e9)(delayed(processPixel)(image, i, j, self.h, halfWindowSize, halfTemplate, gaussian, imgLBP, lbp.max_label) for i,j in coordinates)
         printProgressBar(100, 100)
 
         for idx in xrange(0,len(results)):

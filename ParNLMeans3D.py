@@ -15,9 +15,9 @@ from printProgressBar import *
 def hist(lbpVideos, ti, tf, ri, rf, ci, cf, sizeXY, sizeXT, sizeYT):
     d = 0.0001
 
-    hist = np.concatenate((np.histogram(lbpVideos['xy'][ti:tf,ri:rf,ci:cf], sizeXY)[0], \
-                            np.histogram(lbpVideos['xt'][ti:tf,ri:rf,ci:cf], sizeXT)[0], \
-                            np.histogram(lbpVideos['yt'][ti:tf,ri:rf,ci:cf], sizeYT)[0])) + d
+    hist = np.concatenate((np.histogram(lbpVideos['xy'][ti:tf,ri:rf,ci:cf], sizeXY, (0,sizeXY))[0], \
+                            np.histogram(lbpVideos['xt'][ti:tf,ri:rf,ci:cf], sizeXT, (0,sizeXT))[0], \
+                            np.histogram(lbpVideos['yt'][ti:tf,ri:rf,ci:cf], sizeYT, (0,sizeYT))[0])) + d
     hist = hist / np.sum(hist)
     return hist
 

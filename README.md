@@ -54,7 +54,6 @@ The file **runTests.sh** run the filtering process with more than one parameter:
 Example how to run:
 
 ```
-#!zsh
 ./runTests.sh -f /home/user/resultexp/ -i seq1 -s 10 -m 3
 
 ```
@@ -65,7 +64,6 @@ All the results will be save on table **results** on the database **3d_denoising
 
 
 ```
-#!sql
 select seq, sigma, method, h, p, w, msb, psnr, max(ssim) 
 from results 
 where sigma == 25 and seq == 'seq4' and
@@ -80,7 +78,6 @@ The tests with BM3D-SAPCA [1] were made through the source code available in [Al
 The algorithm can be run with the sample following code:
 
 ```
-#!matlab
 originalImage = imread('./dataset/seq1/original/gn-0-009625.png');
 noiseImage = imread('./dataset/seq1/gaussian_noise-25/gn-25-009625.png');
 

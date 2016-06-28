@@ -18,18 +18,6 @@ This README documents the necessary steps to run our tests.
 * bob.ip.base (from [Bob](https://www.idiap.ch/software/bob/docs/releases/last/sphinx/html/index.html) library). See also this [link](https://github.com/idiap/bob/wiki/Dependencies)
 * [Joblib](https://pythonhosted.org/joblib/parallel.html)
 
-### TODO ###
-
-* [DONE] - handle boundaries (use copyMakeBorder from OpenCV)
-* [DONE] - dev the Non-Local Means and LBP-TOP denoising method
-* [DONE] - create a script to run experiments
-* [DONE] - implement a parallel version of Non-Local Means
-* [DONE] - dev the Non-Local Means and MSB denoising method
-* [DONE] - implement a 2D version of Non-Local Means
-* implement a 3D version of Non-Local Means, which only considers 2D regions
-* [DONE] - create a new test (a scene which lots of objects)
-* implement a fast version of all NLM variants =)
-
 ### EXPERIMENTS ###
 
 The file **runNonLocalMeans** run a filtering process with the user parameters:

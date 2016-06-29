@@ -88,7 +88,7 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
 
     # Normalize weights matrix (video = None, texture = LBP)
     # Aux (Not returned)
-    hs = np.std(w_texLBP)
+    hs = np.std(w_texLBP) + 0.00001
     w_texLBP = np.exp(-w_texLBP/hs)
     w_texLBP[halfWindowSize, halfWindowSize, halfWindowSize] = 0.0
     w_texLBP[halfWindowSize, halfWindowSize, halfWindowSize] = np.max(w_texLBP)
@@ -96,7 +96,7 @@ def processPixel(video, t, i, j, h, halfWindowSize, halfTemplate, gaussian, lbpV
 
     # Normalize weights matrix (video = None, texture = LBP+MSB)
     # Aux (Not returned)
-    hs = np.std(w_texLBPMSB)
+    hs = np.std(w_texLBPMSB) + 0.00001
     w_texLBPMSB = np.exp(-w_texLBPMSB/hs)
     w_texLBPMSB[halfWindowSize, halfWindowSize, halfWindowSize] = 0.0
     w_texLBPMSB[halfWindowSize, halfWindowSize, halfWindowSize] = np.max(w_texLBPMSB)
